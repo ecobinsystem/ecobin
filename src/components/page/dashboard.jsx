@@ -29,7 +29,7 @@ export default function Dashboard({ isOffline: propIsOffline, isOnline: propIsOn
     Residual: 0
   })
 
-  const isRecent = latestData?.rawDate ? (Date.now() - latestData.rawDate.getTime() < 15000) : false
+  const isRecent = latestData?.rawDate ? (Date.now() - latestData.rawDate.getTime() < 45000) : false
   const isOffline = propIsOffline !== undefined ? propIsOffline : (propIsOnline !== undefined ? !propIsOnline : !isRecent)
   const isOfflineRef = useRef(isOffline)
 
@@ -119,7 +119,7 @@ export default function Dashboard({ isOffline: propIsOffline, isOnline: propIsOn
           setLatestData(newest)
           setLastUpdated(new Date().toLocaleTimeString())
 
-          const isRecordRecent = newest?.rawDate ? (Date.now() - newest.rawDate.getTime() < 15000) : false
+          const isRecordRecent = newest?.rawDate ? (Date.now() - newest.rawDate.getTime() < 45000) : false
           const isEsp32Offline = isOfflineRef.current || !isRecordRecent || (propIsOffline !== undefined && propIsOffline) || (propIsOnline !== undefined && !propIsOnline)
 
           if (isEsp32Offline) {
@@ -410,32 +410,29 @@ export default function Dashboard({ isOffline: propIsOffline, isOnline: propIsOn
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-emerald-600 text-white shadow-sm">
-                <Activity className="w-5 h-5" />
-              </span>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                 Bin Level Monitoring
               </h1>
             </div>
             <p className="text-sm text-slate-500 mt-1">
-              Live ultrasonic telemetry tracking fill levels across all 3 waste compartments
+              Live tracking of fill levels across all 3 waste compartments
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <div
               className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border ${
-                connected && !isOffline
+                !isOffline
                   ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                   : 'bg-rose-50 text-rose-800 border-rose-200'
               }`}
             >
               <span
                 className={`w-2 h-2 rounded-full ${
-                  connected && !isOffline ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'
+                  !isOffline ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'
                 }`}
               />
-              <span>{connected && !isOffline ? 'Live Snapshot' : 'Device Offline'}</span>
+              <span>{!isOffline ? 'Device Online' : 'Device Offline'}</span>
             </div>
 
             {lastUpdated && (
@@ -453,7 +450,7 @@ export default function Dashboard({ isOffline: propIsOffline, isOnline: propIsOn
               Connecting to EcoBin Device...
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Awaiting telemetry from EcoBin ultrasonic sensors
+              Awaiting data from EcoBin sensors
             </p>
           </div>
         ) : (
@@ -479,12 +476,11 @@ export default function Dashboard({ isOffline: propIsOffline, isOnline: propIsOn
                           <h2 className="text-base font-bold text-slate-900 leading-tight">
                             {bin.name}
                           </h2>
-                          <div className="text-xs text-slate-400">Ultrasonic Sensor</div>
                         </div>
                       </div>
 
                       <span
-                        className={`text-xs font-bold px-2.5 py-1 rounded-full border ${badge.bg}`}
+                        className={`text-xs font-bold px-2 py-1 rounded-full border ${badge.bg}`}
                       >
                         {badge.label}
                       </span>
@@ -547,19 +543,13 @@ export default function Dashboard({ isOffline: propIsOffline, isOnline: propIsOn
                         <div className="w-20 h-2 bg-slate-600 rounded-full mt-1 shadow-sm opacity-70" />
                       </div>
 
-                      <div className="mt-2 text-xs text-slate-500 flex items-center gap-1.5 font-mono">
-                        <span className="text-slate-400 uppercase font-sans font-semibold text-[10px]">Sensor Distance:</span>
-                        <span className="font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">
-                          {bin.distance} cm
-                        </span>
-                      </div>
                     </div>
                   </div>
 
                   {bin.fill >= 90 && (
                     <div className="mt-4 p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
-                      <span>Compartment is near capacity. Please empty.</span>
+                      <span>Compartment is near full capacity. Please empty.</span>
                     </div>
                   )}
                 </div>

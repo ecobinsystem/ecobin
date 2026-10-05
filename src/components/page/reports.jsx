@@ -206,7 +206,7 @@ export default function Reports({
         label: 'Biodegradable',
         metric: bioMetric,
         status: t.bioStatus,
-        statusType: t.bioFill >= 90 ? 'danger' : t.bioFill >= 50 ? 'warning' : 'info',
+        statusType: t.bioFill >= 85 ? 'danger' : t.bioFill >= 50 ? 'warning' : 'info',
         date: t.date,
         dateStr: t.dateStr,
         timeStr: t.timeStr,
@@ -221,7 +221,7 @@ export default function Reports({
         label: 'Recyclable',
         metric: recMetric,
         status: t.recStatus,
-        statusType: t.recFill >= 90 ? 'danger' : t.recFill >= 50 ? 'warning' : 'info',
+        statusType: t.recFill >= 85 ? 'danger' : t.recFill >= 50 ? 'warning' : 'info',
         date: t.date,
         dateStr: t.dateStr,
         timeStr: t.timeStr,
@@ -236,7 +236,7 @@ export default function Reports({
         label: 'Residual',
         metric: resMetric,
         status: t.resStatus,
-        statusType: t.resFill >= 90 ? 'danger' : t.resFill >= 50 ? 'warning' : 'info',
+        statusType: t.resFill >= 85 ? 'danger' : t.resFill >= 50 ? 'warning' : 'info',
         date: t.date,
         dateStr: t.dateStr,
         timeStr: t.timeStr,
@@ -372,34 +372,34 @@ export default function Reports({
     let wasResFull = false
 
     sortedTrash.forEach((t) => {
-      const isBio = t.bioFill >= 90 || String(t.bioStatus).toUpperCase().includes('FULL')
+      const isBio = t.bioFill >= 85 || String(t.bioStatus).toUpperCase().includes('FULL')
       if (isBio && !wasBioFull) bioFullEpisodes++
       wasBioFull = isBio
 
-      const isRec = t.recFill >= 90 || String(t.recStatus).toUpperCase().includes('FULL')
+      const isRec = t.recFill >= 85 || String(t.recStatus).toUpperCase().includes('FULL')
       if (isRec && !wasRecFull) recFullEpisodes++
       wasRecFull = isRec
 
-      const isRes = t.resFill >= 90 || String(t.resStatus).toUpperCase().includes('FULL')
+      const isRes = t.resFill >= 85 || String(t.resStatus).toUpperCase().includes('FULL')
       if (isRes && !wasResFull) resFullEpisodes++
       wasResFull = isRes
     })
 
     const notifBioFullCount = filteredNotifs.filter((n) => {
       const name = String(n.category || n.label || '').toLowerCase()
-      const isFull = String(n.status || '').toUpperCase().includes('HALF') ? false : (String(n.status || '').toUpperCase().includes('FULL') || Number(n.fillPercentage) >= 90)
+      const isFull = String(n.status || '').toUpperCase().includes('HALF') ? false : (String(n.status || '').toUpperCase().includes('FULL') || Number(n.fillPercentage) >= 85)
       return name.includes('bio') && isFull
     }).length
 
     const notifRecFullCount = filteredNotifs.filter((n) => {
       const name = String(n.category || n.label || '').toLowerCase()
-      const isFull = String(n.status || '').toUpperCase().includes('HALF') ? false : (String(n.status || '').toUpperCase().includes('FULL') || Number(n.fillPercentage) >= 90)
+      const isFull = String(n.status || '').toUpperCase().includes('HALF') ? false : (String(n.status || '').toUpperCase().includes('FULL') || Number(n.fillPercentage) >= 85)
       return name.includes('rec') && isFull
     }).length
 
     const notifResFullCount = filteredNotifs.filter((n) => {
       const name = String(n.category || n.label || '').toLowerCase()
-      const isFull = String(n.status || '').toUpperCase().includes('HALF') ? false : (String(n.status || '').toUpperCase().includes('FULL') || Number(n.fillPercentage) >= 90)
+      const isFull = String(n.status || '').toUpperCase().includes('HALF') ? false : (String(n.status || '').toUpperCase().includes('FULL') || Number(n.fillPercentage) >= 85)
       return name.includes('res') && isFull
     }).length
 
@@ -411,9 +411,9 @@ export default function Reports({
     const latestBioFill = latestTrash ? Math.round(latestTrash.bioFill) : 0
     const latestRecFill = latestTrash ? Math.round(latestTrash.recFill) : 0
     const latestResFill = latestTrash ? Math.round(latestTrash.resFill) : 0
-    const bioStatus = latestBioFill >= 90 ? 'FULL' : latestBioFill >= 50 ? 'HALF FULL' : 'NORMAL'
-    const recStatus = latestRecFill >= 90 ? 'FULL' : latestRecFill >= 50 ? 'HALF FULL' : 'NORMAL'
-    const resStatus = latestResFill >= 90 ? 'FULL' : latestResFill >= 50 ? 'HALF FULL' : 'NORMAL'
+    const bioStatus = latestBioFill >= 85 ? 'FULL' : latestBioFill >= 50 ? 'HALF FULL' : 'NORMAL'
+    const recStatus = latestRecFill >= 85 ? 'FULL' : latestRecFill >= 50 ? 'HALF FULL' : 'NORMAL'
+    const resStatus = latestResFill >= 85 ? 'FULL' : latestResFill >= 50 ? 'HALF FULL' : 'NORMAL'
 
     return {
       bioFullTimes,
@@ -434,7 +434,7 @@ export default function Reports({
     notifications.forEach((n) => {
       const isFull = String(n.status || '').toUpperCase().includes('HALF')
         ? false
-        : String(n.status || '').toUpperCase().includes('FULL') || Number(n.fillPercentage) >= 90
+        : String(n.status || '').toUpperCase().includes('FULL') || Number(n.fillPercentage) >= 85
       if (isFull) {
         const cat = String(n.category || n.label || '').toLowerCase()
         let comp = 'residual'
@@ -450,19 +450,19 @@ export default function Reports({
     let wasResFull = false
 
     sortedTrash.forEach((t) => {
-      const isBio = t.bioFill >= 90 || String(t.bioStatus).toUpperCase().includes('FULL')
+      const isBio = t.bioFill >= 85 || String(t.bioStatus).toUpperCase().includes('FULL')
       if (isBio && !wasBioFull) {
         fullEvents.push({ date: t.date, compartment: 'biodegradable' })
       }
       wasBioFull = isBio
 
-      const isRec = t.recFill >= 90 || String(t.recStatus).toUpperCase().includes('FULL')
+      const isRec = t.recFill >= 85 || String(t.recStatus).toUpperCase().includes('FULL')
       if (isRec && !wasRecFull) {
         fullEvents.push({ date: t.date, compartment: 'recyclable' })
       }
       wasRecFull = isRec
 
-      const isRes = t.resFill >= 90 || String(t.resStatus).toUpperCase().includes('FULL')
+      const isRes = t.resFill >= 85 || String(t.resStatus).toUpperCase().includes('FULL')
       if (isRes && !wasResFull) {
         fullEvents.push({ date: t.date, compartment: 'residual' })
       }
@@ -581,14 +581,35 @@ export default function Reports({
     return result
   }, [notifications, trashRecords, selectedYear, selectedMonth, monthsList])
 
+  const [isPrinting, setIsPrinting] = useState(false)
+
+  useEffect(() => {
+    const handleBeforePrint = () => setIsPrinting(true)
+    const handleAfterPrint = () => setIsPrinting(false)
+    window.addEventListener('beforeprint', handleBeforePrint)
+    window.addEventListener('afterprint', handleAfterPrint)
+    return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint)
+      window.removeEventListener('afterprint', handleAfterPrint)
+    }
+  }, [])
+
   const totalPages = Math.ceil(filteredEntries.length / itemsPerPage) || 1
   const paginatedEntries = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage
     return filteredEntries.slice(start, start + itemsPerPage)
   }, [filteredEntries, currentPage, itemsPerPage])
 
+  const displayEntries = useMemo(() => {
+    return isPrinting ? filteredEntries : paginatedEntries
+  }, [isPrinting, filteredEntries, paginatedEntries])
+
   const handlePrint = () => {
-    window.print()
+    setIsPrinting(true)
+    setTimeout(() => {
+      window.print()
+      setIsPrinting(false)
+    }, 150)
   }
 
   const resetFilters = () => {
@@ -651,15 +672,12 @@ export default function Reports({
 
           <header className="pb-4 border-b border-slate-200 print:hidden">
             <div className="flex items-center gap-2.5">
-              <span className="p-2.5 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-sm shadow-emerald-200">
-                <BarChart3 className="w-5 h-5" />
-              </span>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
                   Analytics & Reports
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                  Real-time waste segregation statistics, classification intelligence, and historical telemetry
+                  Real-time waste segregation statistics, classification intelligence, and historical data
                 </p>
               </div>
             </div>
@@ -687,7 +705,7 @@ export default function Reports({
                     if (currentPage !== 1) setCurrentPage(1)
                   }}
                   placeholder="Search waste type, status, date, IP..."
-                  className="w-full pl-9 pr-9 py-2 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-800 transition-all placeholder:text-slate-400"
+                  className="w-full pl-9 pr-9 py-2 rounded text-sm bg-white border border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-800 transition-all placeholder:text-slate-400"
                 />
                 {searchQuery && (
                   <button
@@ -707,7 +725,7 @@ export default function Reports({
                     setSelectedMonth(e.target.value)
                     setCurrentPage(1)
                   }}
-                  className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-800 transition-all cursor-pointer font-medium"
+                  className="w-full px-3 py-2 rounded text-xs sm:text-sm bg-slate-50 border border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-800 transition-all cursor-pointer font-medium"
                 >
                   <option value="all">All Months</option>
                   {monthsList.map((m) => (
@@ -725,7 +743,7 @@ export default function Reports({
                     setSelectedYear(e.target.value)
                     setCurrentPage(1)
                   }}
-                  className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-800 transition-all cursor-pointer font-medium"
+                  className="w-full px-3 py-2 rounded text-xs sm:text-sm bg-slate-50 border border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-800 transition-all cursor-pointer font-medium"
                 >
                   <option value="all">All Years</option>
                   {availableYears.map((y) => (
@@ -740,10 +758,10 @@ export default function Reports({
                 <button
                   type="button"
                   onClick={handlePrint}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-600 shadow-sm shadow-emerald-200 transition-all hover:shadow cursor-pointer"
+                  className="w-24 text-[13px] inline-flex items-center justify-center gap-2 px-2 py-2 rounded font-semibold bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-600 shadow-sm shadow-emerald-200 transition-all hover:shadow cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />
-                  <span>Print Report</span>
+                  <span>Print</span>
                 </button>
               </div>
             </div>
@@ -762,7 +780,7 @@ export default function Reports({
                   </div>
                 </div>
                 <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                  Full &ge; 90%
+                  Full &ge; 85%
                 </span>
               </div>
 
@@ -793,7 +811,7 @@ export default function Reports({
                   </div>
                 </div>
                 <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
-                  Full &ge; 90%
+                  Full &ge; 85%
                 </span>
               </div>
 
@@ -824,7 +842,7 @@ export default function Reports({
                   </div>
                 </div>
                 <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-50 text-purple-800 border border-purple-200">
-                  Full &ge; 90%
+                  Full &ge; 85%
                 </span>
               </div>
 
@@ -844,7 +862,7 @@ export default function Reports({
             </div>
           </section>
 
-          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print:border-slate-300 print:shadow-none">
+          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print:border-slate-300 print:shadow-none print:overflow-visible print:bg-white print:h-auto">
             <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <span className="p-2 rounded-xl bg-amber-50 text-amber-600 border border-amber-200">
@@ -853,7 +871,7 @@ export default function Reports({
                 <div>
                   <h2 className="text-base font-bold text-slate-900">Weekly Full Compartment Frequency</h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Count of times each compartment reached capacity (&ge; 90%) per week
+                    Count of times each compartment reached capacity (&ge; 85%) per week
                   </p>
                 </div>
               </div>
@@ -862,7 +880,7 @@ export default function Reports({
               </div>
             </div>
 
-            <div className="overflow-x-auto print:overflow-visible">
+            <div className="overflow-x-auto print:overflow-visible print:bg-white">
               <table className="w-full text-left text-xs sm:text-sm print:text-xs print:w-full print:table-fixed">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider print:bg-slate-100 print:text-black">
@@ -949,31 +967,33 @@ export default function Reports({
             </div>
           </section>
 
-          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print:border-slate-300 print:shadow-none">
+          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print:border-slate-300 print:shadow-none print:overflow-visible print:bg-white print:h-auto">
             <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-base font-bold text-slate-900">Historical Telemetry & Logged Events</h2>
+                <h2 className="text-base font-bold text-slate-900">Historical Data & Logged Events</h2>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Detailed timeline of automated sensor readings, classifications, and system triggers
                 </p>
               </div>
               <div className="text-xs font-medium text-slate-500 font-mono">
-                Showing {paginatedEntries.length} of {filteredEntries.length} entries
+                {isPrinting
+                  ? `Showing all ${filteredEntries.length} entries`
+                  : `Showing ${paginatedEntries.length} of ${filteredEntries.length} entries`}
               </div>
             </div>
 
             <div className="overflow-x-auto print:overflow-visible">
-              <table className="w-full text-left text-xs sm:text-sm print:text-xs print:w-full print:table-fixed">
+              <table className="w-full text-left text-[13px] print:text-xs print:w-full print:table-fixed">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider print:bg-slate-100 print:text-black">
+                  <tr className="bg-slate-50 border-b border-slate-200 text-[13px] text-center font-bold text-slate-500 tracking-wider print:bg-slate-100 print:text-black">
                     <th className="py-3.5 px-6 min-w-[220px] w-1/3 print:min-w-0 print:w-[34%] print:py-2 print:px-2">Date & Time</th>
                     <th className="py-3.5 px-4 print:w-[22%] print:py-2 print:px-2">Compartment</th>
-                    <th className="py-3.5 px-4 print:w-[22%] print:py-2 print:px-2">Metric</th>
+                    <th className="py-3.5 px-4 print:w-[22%] print:py-2 print:px-2">Percentage</th>
                     <th className="py-3.5 px-4 print:w-[22%] print:py-2 print:px-2">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
-                  {paginatedEntries.length === 0 ? (
+                  {displayEntries.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="py-12 text-center text-slate-400">
                         <FileSpreadsheet className="w-8 h-8 mx-auto mb-2 opacity-40" />
@@ -982,13 +1002,13 @@ export default function Reports({
                       </td>
                     </tr>
                   ) : (
-                    paginatedEntries.map((item) => {
+                    displayEntries.map((item) => {
                       const isBio = item.category.includes('bio')
                       const isRec = item.category.includes('rec')
                       const isRes = item.category.includes('res')
 
                       return (
-                        <tr key={item.id} className="hover:bg-slate-50/70 transition-colors print:hover:bg-transparent">
+                        <tr key={item.id} className="hover:bg-slate-50/70 transition-colors print:hover:bg-transparent print:break-inside-avoid">
                           <td className="py-3.5 px-6 whitespace-nowrap font-mono text-xs text-slate-600 print:py-2 print:px-2">
                             <div className="flex items-center gap-2">
                               <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -996,7 +1016,7 @@ export default function Reports({
                             </div>
                           </td>
 
-                          <td className="py-3 px-4 whitespace-nowrap print:py-2 print:px-2">
+                          <td className="py-3 text-left px-4 whitespace-nowrap print:py-2 print:px-2">
                             <span
                               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border print:px-2 print:py-0.5 ${
                                 isBio
@@ -1015,7 +1035,7 @@ export default function Reports({
                             </span>
                           </td>
 
-                          <td className="py-3 px-4 whitespace-nowrap font-mono text-xs text-slate-800 print:py-2 print:px-2">
+                          <td className="py-3 px-4 whitespace-nowrap font-mono text-center text-slate-800 print:py-2 print:px-2">
                             {item.metric}
                           </td>
 

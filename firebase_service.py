@@ -96,6 +96,24 @@ def record_esp32_status(status: dict[str, Any]) -> bool:
         return False
 
 
+def record_esp32_session(session_data: dict[str, Any]) -> bool:
+    if not initialize_firebase():
+        return False
+    try:
+        from firebase_admin import firestore
+
+        _database.collection("esp32_sessions").document("current").set({
+            **session_data,
+            "timestamp": firestore.SERVER_TIMESTAMP,
+            "recorded_at": datetime.now(timezone.utc).isoformat(),
+        })
+        return True
+    except Exception as exc:
+        global _status
+        _status = f"Firebase write failed: {exc}"
+        return False
+
+
 def record_trash_level(data: dict[str, Any]) -> bool:
     if not initialize_firebase():
         return False

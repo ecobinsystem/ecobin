@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { db } from '../../firebase'
-import { doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore'
 import { UserPlus, X, User, Phone, Loader2, Pencil } from 'lucide-react'
+import { checkRecipientName, isRecipientNameTaken } from '../checker/recipientChecker'
 
 export default function AddRecipientModal({
   isOpen = false,
   onClose,
   onRecipientAdded,
   recipientToEdit = null,
-  onRecipientUpdated
+  onRecipientUpdated,
+  existingRecipients: propExistingRecipients
 }) {
   const [name, setName] = useState('')
   const [contact, setContact] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [loadedRecipients, setLoadedRecipients] = useState([])
 
   useEffect(() => {
     if (recipientToEdit) {
@@ -26,14 +29,51 @@ export default function AddRecipientModal({
     setError('')
   }, [recipientToEdit, isOpen])
 
+  useEffect(() => {
+    if (!isOpen) return
+    let isCancelled = false
+    async function loadExisting() {
+      let list = []
+      try {
+        const saved = localStorage.getItem('ecobin_recipients')
+        if (saved) list = JSON.parse(saved) || []
+      } catch {}
+      try {
+        const snap = await getDocs(collection(db, 'recipients'))
+        if (!isCancelled) {
+          const docs = snap.docs.map((d) => ({ id: d.id, name: d.data().name || d.id, ...d.data() }))
+          const merged = [...docs]
+          list.forEach((item) => {
+            if (!merged.some((m) => m.id === item.id || m.name === item.name)) {
+              merged.push(item)
+            }
+          })
+          setLoadedRecipients(merged)
+        }
+      } catch {
+        if (!isCancelled) setLoadedRecipients(list)
+      }
+    }
+    loadExisting()
+    return () => {
+      isCancelled = true
+    }
+  }, [isOpen])
+
   if (!isOpen) {
     return null
   }
 
+  const recipientsList = propExistingRecipients || loadedRecipients
+  const isNameDuplicate = Boolean(
+    name.trim() && isRecipientNameTaken(name.trim(), recipientsList, recipientToEdit?.id || recipientToEdit?.name)
+  )
+
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!name.trim()) {
-      setError('Please enter the recipient name.')
+    const nameCheck = checkRecipientName(name, recipientsList, recipientToEdit?.id || recipientToEdit?.name)
+    if (!nameCheck.isValid) {
+      setError(nameCheck.error)
       return
     }
     if (!contact.trim()) {
@@ -153,7 +193,7 @@ export default function AddRecipientModal({
 
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-      <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-md rounded bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
         <div className="p-5 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shadow-sm">
@@ -175,7 +215,7 @@ export default function AddRecipientModal({
             className="p-1.5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
             aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            <X size={18} />
           </button>
         </div>
 
@@ -197,12 +237,23 @@ export default function AddRecipientModal({
               <input
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                autoCapitalize="words"
+                onChange={(e) => {
+                  const val = e.target.value
+                  const formatted = val.replace(/(?:^|\s)\S/g, (char) => char.toUpperCase())
+                  setName(formatted)
+                  if (error) setError('')
+                }}
                 placeholder="e.g. Engr. Marcus Rivera"
-                className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-white shadow-xs"
+                className="w-full pl-9 pr-3.5 py-2 text-xs rounded border border-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-white shadow-xs"
                 disabled={saving}
               />
             </div>
+            {isNameDuplicate && (
+              <p className="text-[11px] text-rose-500 mt-1 font-medium">
+                Recipient already added.
+              </p>
+            )}
           </div>
 
           <div>
@@ -221,7 +272,7 @@ export default function AddRecipientModal({
                 onChange={handleContactChange}
                 maxLength={13}
                 placeholder="+639123456789"
-                className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-white font-mono shadow-xs"
+                className="w-full pl-9 pr-3.5 py-2 text-xs rounded border border-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-white font-mono shadow-xs"
                 disabled={saving}
               />
             </div>
@@ -235,8 +286,8 @@ export default function AddRecipientModal({
           <div className="pt-2 flex items-center gap-2.5 justify-end">
             <button
               type="submit"
-              disabled={saving || !name.trim() || isContactInvalid}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={saving || !name.trim() || isNameDuplicate || isContactInvalid}
+              className="text-[12px] inline-flex items-center gap-1 px-2 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white  font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <>
@@ -253,7 +304,7 @@ export default function AddRecipientModal({
             <button
               type="button"
               onClick={handleCancel}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
+              className="text-[12px] inline-flex items-center gap-1 px-2 py-2 rounded bg-slate-500 hover:bg-slate-600 text-white text-xs font-semibold transition"
               disabled={saving}
             >
               <X className="w-3.5 h-3.5" />

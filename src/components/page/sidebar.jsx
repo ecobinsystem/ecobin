@@ -7,13 +7,13 @@ import {
   Settings,
   BarChart3,
   LogOut,
-  Leaf,
   Menu,
   X,
   ChevronRight,
   Wifi,
   WifiOff
 } from 'lucide-react'
+import logo from '../../public/img/logo.png'
 
 export default function Sidebar({
   activeTab = 'dashboard',
@@ -27,45 +27,77 @@ export default function Sidebar({
 
   useEffect(() => {
     let active = true
-    let lastSnapshotOnline = false
+    let consecutiveFailures = 0
+    let lastRecordTimestamp = 0
 
-    const checkDirectConnection = async () => {
-      if (!deviceIp || deviceIp === '0.0.0.0') {
-        if (active) setIsOnline(false)
-        return
-      }
-      try {
-        const controller = new AbortController()
-        const timeout = setTimeout(() => controller.abort(), 1500)
-        const res = await fetch(`http://${deviceIp}/api/status`, {
-          signal: controller.signal,
-          mode: 'cors'
-        })
-        clearTimeout(timeout)
-        if (active) {
+    const checkStatus = async () => {
+      const hasRecentRecord = lastRecordTimestamp > 0 && (Date.now() - lastRecordTimestamp < 30000)
+
+      let pingSuccess = false
+
+      if (deviceIp && deviceIp !== '0.0.0.0') {
+        try {
+          const controller = new AbortController()
+          const timeout = setTimeout(() => controller.abort(), 2000)
+          const res = await fetch(`http://${deviceIp}/api/status`, {
+            signal: controller.signal,
+            mode: 'cors'
+          })
+          clearTimeout(timeout)
           if (res.ok) {
             const data = await res.json().catch(() => null)
-            const isConn = data ? (data.connected === true || data.status === 'connected') : true
-            setIsOnline(isConn)
-          } else if (!lastSnapshotOnline) {
-            setIsOnline(false)
+            pingSuccess = data ? (data.connected === true || data.status === 'connected') : true
           }
-        }
-      } catch (err) {
-        if (active && !lastSnapshotOnline) {
+        } catch {}
+      }
+
+      if (!active) return
+
+      if (pingSuccess || hasRecentRecord) {
+        consecutiveFailures = 0
+        setIsOnline(true)
+      } else {
+        consecutiveFailures++
+        if (consecutiveFailures >= 2) {
           setIsOnline(false)
         }
       }
     }
 
-    checkDirectConnection()
-    const timer = setInterval(checkDirectConnection, 4000)
+    checkStatus()
+    const timer = setInterval(checkStatus, 3000)
+
+    const unsubSessions = onSnapshot(collection(db, 'esp32_sessions'), (snapshot) => {
+      if (!active || snapshot.empty) return
+      let newestSessionTime = 0
+      let isSessionActive = false
+      snapshot.docs.forEach((doc) => {
+        const data = doc.data()
+        let t = 0
+        if (data.timestamp && typeof data.timestamp.toDate === 'function') {
+          t = data.timestamp.toDate().getTime()
+        } else if (data.timestamp && typeof data.timestamp === 'number') {
+          t = new Date(data.timestamp).getTime()
+        } else if (data.recorded_at) {
+          t = new Date(data.recorded_at).getTime()
+        }
+        if (t > newestSessionTime) {
+          newestSessionTime = t
+          isSessionActive = data.status === 'online' || data.connected === true || (Date.now() - t < 30000)
+        }
+      })
+      if (newestSessionTime > lastRecordTimestamp) {
+        lastRecordTimestamp = newestSessionTime
+      }
+      if (isSessionActive) {
+        consecutiveFailures = 0
+        setIsOnline(true)
+      }
+    })
 
     const unsubscribe = onSnapshot(collection(db, 'trash_records'), (snapshot) => {
       if (!active) return
       if (snapshot.empty) {
-        lastSnapshotOnline = false
-        checkDirectConnection()
         return
       }
       let newestTime = 0
@@ -87,21 +119,20 @@ export default function Sidebar({
         if (t > newestTime) newestTime = t
       })
 
-      const isRecent = newestTime > 0 && (Date.now() - newestTime < 15000)
-      lastSnapshotOnline = isRecent
-      if (isRecent) {
-        setIsOnline(true)
-      } else {
-        checkDirectConnection()
+      if (newestTime > lastRecordTimestamp) {
+        lastRecordTimestamp = newestTime
       }
-    }, () => {
-      lastSnapshotOnline = false
-      if (active) checkDirectConnection()
+      const isRecent = newestTime > 0 && (Date.now() - newestTime < 30000)
+      if (isRecent) {
+        consecutiveFailures = 0
+        setIsOnline(true)
+      }
     })
 
     return () => {
       active = false
       clearInterval(timer)
+      unsubSessions()
       unsubscribe()
     }
   }, [deviceIp])
@@ -135,14 +166,14 @@ export default function Sidebar({
     <div className="flex flex-col h-full bg-white border-r border-slate-200 text-slate-800 w-64 select-none">
       <div className="p-5 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-100">
-            <Leaf className="w-5 h-5" />
+          <div>
+            <img src={logo} alt="EcoBin Logo" className="w-16 h-16 object-contain" />
           </div>
           <div>
-            <h1 className="font-extrabold text-base tracking-tight text-slate-900 leading-none">
-              EcoBin <span className="text-emerald-600">IoT</span>
+            <h1 className="text-[20px] font-extrabold tracking-tight text-slate-900 leading-none">
+              EcoBin
             </h1>
-            <p className="text-[11px] font-medium text-slate-400 mt-1">
+            <p className="text-[13px] font-medium text-slate-400 mt-1">
               Smart Waste System
             </p>
           </div>
@@ -168,7 +199,7 @@ export default function Sidebar({
               key={item.id}
               type="button"
               onClick={() => handleSelect(item.id)}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded text-md font-semibold transition-all duration-150 ${
                 isActive
                   ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-200'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
@@ -201,45 +232,16 @@ export default function Sidebar({
             </button>
           )
         })}
-      </nav>
-
-      <div className="p-4 border-t border-slate-100">
-        <div className={`flex items-center justify-between p-3 rounded-xl border mb-3 ${
-          effectiveOnline
-            ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
-            : 'bg-slate-50 border-slate-200 text-slate-600'
-        }`}>
-          <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-              effectiveOnline ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'
-            }`}>
-              {effectiveOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${
-                  effectiveOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'
-                }`} />
-                <span className="text-xs font-bold leading-none">
-                  {effectiveOnline ? 'ESP32 Online' : 'ESP32 Offline'}
-                </span>
-              </div>
-              <div className="text-[11px] font-mono text-slate-500 mt-1 leading-none">
-                {deviceIp}
-              </div>
-            </div>
-          </div>
-        </div>
 
         <button
           type="button"
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition"
+          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded text-md font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition"
         >
           <LogOut className="w-4 h-4 text-rose-500" />
           <span>Logout</span>
         </button>
-      </div>
+      </nav>
     </div>
   )
 

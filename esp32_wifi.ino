@@ -42,8 +42,8 @@ const int ECHO_REC_PIN = 21;
 const int TRIG_RES_PIN = 22;
 const int ECHO_RES_PIN = 23;
 const float BIN_DEPTH_CM = 25.0;
-const char* FIREBASE_PROJECT_ID = "ecobin-39c3c";
-const char* FIREBASE_API_KEY = "AIzaSyA2bUo15pxy8cwIngrUNJ1mqv1NX6Q9i_Y";
+const char* FIREBASE_PROJECT_ID = "ecobin-b4728";
+const char* FIREBASE_API_KEY = "AIzaSyAu5OJmQipn70ptSXo69ekNLLJQqSoIskY";
 
 Servo servoBio;
 Servo servoRec;
@@ -163,6 +163,30 @@ void sendTrashLevelToFirestore() {
     } else {
       logMsg("[FIRESTORE] Save failed (HTTP " + String(httpCode) + ")");
     }
+    https.end();
+  }
+}
+
+void sendSessionToFirestore(String status) {
+  if (WiFi.status() != WL_CONNECTED) return;
+
+  WiFiClientSecure client;
+  client.setInsecure();
+  HTTPClient https;
+
+  String url = "https://firestore.googleapis.com/v1/projects/" + String(FIREBASE_PROJECT_ID) + "/databases/(default)/documents/esp32_sessions/current?key=" + String(FIREBASE_API_KEY);
+
+  if (https.begin(client, url)) {
+    https.addHeader("Content-Type", "application/json");
+
+    String json = "{\"fields\":{";
+    json += "\"status\":{\"stringValue\":\"" + status + "\"},";
+    json += "\"connected\":{\"booleanValue\":" + String(status == "online" ? "true" : "false") + "},";
+    json += "\"ip\":{\"stringValue\":\"" + WiFi.localIP().toString() + "\"},";
+    json += "\"recorded_at\":{\"stringValue\":\"" + String(millis()) + "\"}";
+    json += "}}";
+
+    https.sendRequest("PATCH", json);
     https.end();
   }
 }
@@ -543,6 +567,7 @@ void setup() {
     logMsg("[INFO] Assigned IP: " + WiFi.localIP().toString());
     logMsg("[INFO] Signal Strength: " + String(WiFi.RSSI()) + " dBm");
     logMsg("[INFO] MAC Address: " + WiFi.macAddress());
+    sendSessionToFirestore("online");
   } else {
     digitalWrite(STATUS_LED_PIN, LOW);
     logMsg("[WARNING] Could not connect to Wi-Fi. Check SSID/Password.");

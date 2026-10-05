@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { X, KeyRound, CheckCircle2, Phone, Lock, Eye, EyeOff, ShieldCheck } from 'lucide-react'
+import { X, RotateCcw, Send,Undo2, KeyRound, CheckCircle2, Phone, Lock, Eye, EyeOff, ShieldCheck } from 'lucide-react'
 import { db } from '../../firebase'
 import { collection, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { sendSms } from '../../services/pushbullet'
+import { checkPasswordMatch, doPasswordsMatch } from '../checker/passwordChecker'
 
 async function sha256(message) {
   const msgBuffer = new TextEncoder().encode(message)
@@ -28,6 +29,8 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
   const [passwordError, setPasswordError] = useState('')
   const [passwordResetSuccess, setPasswordResetSuccess] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
+  const [checkingContact, setCheckingContact] = useState(false)
+  const [contactNotFound, setContactNotFound] = useState(false)
 
   useEffect(() => {
     if (!isOpen) {
@@ -47,8 +50,81 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
       setPasswordError('')
       setPasswordResetSuccess(false)
       setSavingPassword(false)
+      setCheckingContact(false)
+      setContactNotFound(false)
     }
   }, [isOpen])
+
+  const isContactValid = contact.startsWith('+63') && contact.length === 13 && /^\+63\d{10}$/.test(contact)
+
+  useEffect(() => {
+    if (!isOpen || !isContactValid) {
+      setContactNotFound(false)
+      setCheckingContact(false)
+      return
+    }
+
+    let isCancelled = false
+    setCheckingContact(true)
+    setContactNotFound(false)
+
+    async function verifyContact() {
+      try {
+        const snap = await getDocs(collection(db, 'users'))
+        if (isCancelled) return
+
+        const enteredDigits = contact.replace(/\D/g, '')
+        let normalizedEntered = contact
+        if (enteredDigits.startsWith('63')) {
+          normalizedEntered = '+' + enteredDigits
+        } else if (enteredDigits.startsWith('09')) {
+          normalizedEntered = '+63' + enteredDigits.slice(1)
+        } else if (enteredDigits.length === 10 && enteredDigits.startsWith('9')) {
+          normalizedEntered = '+63' + enteredDigits
+        }
+
+        const found = snap.docs.find((d) => {
+          const data = d.data()
+          const c = (data.contact || '').trim()
+          const cDigits = c.replace(/\D/g, '')
+          let normalizedC = c
+          if (cDigits.startsWith('63')) {
+            normalizedC = '+' + cDigits
+          } else if (cDigits.startsWith('09')) {
+            normalizedC = '+63' + cDigits.slice(1)
+          } else if (cDigits.length === 10 && cDigits.startsWith('9')) {
+            normalizedC = '+63' + cDigits
+          }
+
+          return (c && (c === contact || c === normalizedEntered)) ||
+            (cDigits && enteredDigits && cDigits === enteredDigits) ||
+            (normalizedC && normalizedEntered && normalizedC === normalizedEntered)
+        })
+
+        if (!found) {
+          setContactNotFound(true)
+          setMatchedUserId('')
+        } else {
+          setContactNotFound(false)
+          setMatchedUserId(found.id)
+        }
+      } catch {
+        if (!isCancelled) {
+          setContactNotFound(false)
+        }
+      } finally {
+        if (!isCancelled) {
+          setCheckingContact(false)
+        }
+      }
+    }
+
+    verifyContact()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [isOpen, contact, isContactValid])
 
   if (!isOpen) return null
 
@@ -79,6 +155,8 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
       val = val.slice(0, 13)
     }
     setContact(val)
+    setContactNotFound(false)
+    setCheckingContact(false)
     if (codeSent) {
       setCodeSent(false)
       setSentCode('')
@@ -87,8 +165,6 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
       setCodeSuccess('')
     }
   }
-
-  const isContactValid = contact.startsWith('+63') && contact.length === 13 && /^\+63\d{10}$/.test(contact)
 
   function getContactProblem() {
     if (!contact) return ''
@@ -105,7 +181,7 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
   }
 
   async function handleSendCode() {
-    if (!isContactValid) return
+    if (!isContactValid || contactNotFound || checkingContact) return
     setSendingCode(true)
     setCodeError('')
     try {
@@ -150,16 +226,9 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
   async function handleResetPassword(e) {
     e.preventDefault()
     setPasswordError('')
-    if (!newPassword) {
-      setPasswordError('Please enter a new password.')
-      return
-    }
-    if (newPassword.length < 4) {
-      setPasswordError('Password must be at least 4 characters.')
-      return
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError('Passwords do not match.')
+    const check = checkPasswordMatch(newPassword, confirmPassword)
+    if (!check.isValid) {
+      setPasswordError(check.error)
       return
     }
     setSavingPassword(true)
@@ -200,14 +269,14 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
   if (isVerified) {
     return (
       <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg p-6 sm:p-7 relative">
+        <div className="w-[450px] bg-white rounded border border-slate-200 shadow-2xl p-6 sm:p-7 relative">
           <button
             type="button"
             onClick={handleClose}
             className="absolute top-4 right-4 p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
             aria-label="Close modal"
           >
-            <X className="w-4 h-4" />
+            <X size={18} />
           </button>
 
           <div className="flex gap-3.5 items-center">
@@ -237,8 +306,9 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
               <button
                 type="button"
                 onClick={handleClose}
-                className="mt-4 w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition cursor-pointer"
+                className="mt-4 py-2 px-2 m-auto flex items-center justify-center gap-1 text-sm sm:text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition cursor-pointer"
               >
+                <Undo2 size={18} />
                 Back to Sign In
               </button>
             </div>
@@ -251,7 +321,7 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 tracking-wider mb-1.5">
                   Enter New Password
                 </label>
                 <div className="relative">
@@ -263,7 +333,7 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Enter new password"
-                    className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-slate-50"
+                    className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded border border-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-slate-50"
                   />
                   <button
                     type="button"
@@ -276,7 +346,7 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 tracking-wider mb-1.5">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -286,9 +356,12 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value)
+                      if (passwordError) setPasswordError('')
+                    }}
                     placeholder="Confirm new password"
-                    className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-slate-50"
+                    className="w-full pl-9 pr-10 py-2.5 text-xs sm:text-sm rounded border border-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-slate-50"
                   />
                   <button
                     type="button"
@@ -298,22 +371,35 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
+                {confirmPassword && newPassword && (
+                  doPasswordsMatch(newPassword, confirmPassword) ? (
+                    <p className="text-[11px] text-emerald-600 mt-1 font-medium">
+                      Passwords match.
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-rose-500 mt-1 font-medium">
+                      Passwords do not match.
+                    </p>
+                  )
+                )}
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer"
-                >
-                  Cancel
-                </button>
+              <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="submit"
                   disabled={savingPassword}
-                  className="flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm shadow-emerald-200 transition cursor-pointer disabled:opacity-60"
+                  className="py-2 px-2 flex items-center justify-center gap-1 text-sm font-semibold rounded bg-emerald-600 text-white hover:bg-emerald-700 transition cursor-pointer disabled:opacity-60"
                 >
+                  <RotateCcw size={18} />
                   {savingPassword ? 'Updating...' : 'Reset Password'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="py-2 px-2 flex items-center gap-1 text-sm font-semibold rounded bg-slate-500 hover:bg-slate-600 transition cursor-pointer"
+                >
+                  <X size={18} />
+                  Cancel
                 </button>
               </div>
             </form>
@@ -325,14 +411,14 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg p-6 sm:p-7 relative">
+      <div className="w-[450px] bg-white rounded border border-slate-200 shadow-2xl p-6 sm:p-7 relative">
         <button
           type="button"
           onClick={handleClose}
           className="absolute top-4 right-4 p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
           aria-label="Close modal"
         >
-          <X className="w-4 h-4" />
+          <X size={18} />
         </button>
 
         <div className="flex gap-3.5 items-center">
@@ -352,11 +438,11 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
 
         <div className="mt-5 space-y-3.5">
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 tracking-wider mb-1.5">
               Contact Number
             </label>
-            <div className="flex gap-2 items-center">
-              <div className="relative flex-1">
+            <div className="flex gap-1 items-center">
+              <div className="relative" style={{ flexGrow: 1 }}>
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
                   <Phone className="w-4 h-4" />
                 </span>
@@ -368,47 +454,58 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
                   onChange={handleContactChange}
                   maxLength={13}
                   placeholder="+639123456789"
-                  className="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-slate-50 font-mono"
+                  style={{ paddingTop: '7px', paddingBottom: '7px', minWidth: '100%', fontSize: '14px'}}
+                  className="pl-9 rounded border border-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-slate-50 font-mono"
                 />
               </div>
               {isContactValid && (
                 <button
                   type="button"
                   onClick={handleSendCode}
-                  disabled={sendingCode}
-                  className="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm shadow-emerald-200 transition shrink-0 cursor-pointer"
+                  disabled={sendingCode || checkingContact || contactNotFound}
+                  className="rounded flex items-center gap-1 text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shrink-0"
+                  style={{fontSize: '14px', padding: '8px', paddingRight:'7px',paddingLeft: '7px', minWidth: 'max-content', whiteSpace: 'nowrap'}}
                 >
-                  {sendingCode ? 'Sending...' : (codeSent ? 'Resend Code' : 'Send Code')}
+                  <Send size={18} className="shrink-0" /> <span style={{maxWidth: '100%'}}>{sendingCode ? 'Sending...' : (checkingContact ? 'Checking...' : (codeSent ? 'Resend Code' : 'Send Code'))}</span>
                 </button>
               )}
             </div>
-            {getContactProblem() && (
+            {getContactProblem() ? (
               <p className="text-[11px] text-rose-500 mt-1 font-medium">
                 {getContactProblem()}
               </p>
-            )}
+            ) : contactNotFound ? (
+              <p className="text-[11px] text-rose-500 mt-1 font-medium">
+                Contact number does not exist.
+              </p>
+            ) : null}
           </div>
 
           {codeSent && (
             <div className="mt-4 pt-4 border-t border-slate-100 space-y-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-700 tracking-wider">
                 Enter 6-Digit Code
               </label>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="text"
-                  maxLength={6}
-                  value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
-                  placeholder="Enter 6-digit code"
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm tracking-widest text-center font-mono font-bold rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-slate-50"
-                />
+              <div className="flex gap-1 items-center">
+                <div className="relative" style={{ flexGrow: 1 }}>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Enter 6-digit code"
+                    style={{ paddingTop: '7px', paddingBottom: '7px', minWidth: '100%', fontSize: '14px'}}
+                    className="px-3 rounded border border-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-slate-50 font-mono"
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={handleVerifyCode}
-                  className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm shadow-emerald-200 transition shrink-0 cursor-pointer"
+                  disabled={verificationCode.length !== 6}
+                  className="rounded flex items-center justify-center gap-1 text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{fontSize: '14px', padding: '8px', minWidth: '130px'}}
                 >
-                  Verify Code
+                  <ShieldCheck size={18} /> <span>Verify Code</span>
                 </button>
               </div>
               {codeError && (
@@ -428,8 +525,9 @@ export default function ForgotPasswordModal({ isOpen = false, onClose }) {
             <button
               type="button"
               onClick={handleClose}
-              className="w-full py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer"
+              className="py-2 px-2 flex items-center gap-1 text-sm font-semibold rounded bg-slate-500 hover:bg-slate-600 transition cursor-pointer"
             >
+              <X size={18} />
               Cancel
             </button>
           </div>

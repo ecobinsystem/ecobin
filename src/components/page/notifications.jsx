@@ -251,15 +251,12 @@ export default function Notifications({
           <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
             <div>
               <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-emerald-600 text-white shadow-sm shadow-emerald-100">
-                  <Bell className="w-5 h-5" />
-                </span>
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                   Trash Bin Notifications
                 </h1>
               </div>
               <p className="text-sm text-slate-500 mt-1">
-                Real-time log of half-full and capacity alerts triggered by sensors
+                Real-time log of half-full and full capacity alerts.
               </p>
             </div>
 
@@ -267,26 +264,11 @@ export default function Notifications({
               <button
                 type="button"
                 onClick={() => setIsRecipientsOpen(true)}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 shadow-sm transition"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded text-xs font-semibold bg-emerald-600 border border-slate-500 text-white hover:bg-emerald-700 hover:border-slate-400 shadow-sm transition"
               >
-                <Users className="w-3.5 h-3.5 text-slate-500" />
-                <span>Recipients</span>
+                <Users className="w-5 h-5 text-white" />
+                <span className='text-[15px]'>Recipients</span>
               </button>
-
-              <div
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border ${
-                  connected
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                    : 'bg-rose-50 text-rose-800 border-rose-200'
-                }`}
-              >
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    connected ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'
-                  }`}
-                />
-                <span>{connected ? 'Live Snapshot' : 'Connecting'}</span>
-              </div>
 
               {lastUpdated && (
                 <span className="text-xs text-slate-500 font-mono hidden md:inline">
@@ -297,32 +279,15 @@ export default function Notifications({
           </header>
 
           <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700">
-                  <Radio className="w-4 h-4" />
-                </span>
-                <h2 className="text-lg font-bold text-slate-900">
-                  Alert Notifications Log
-                </h2>
-              </div>
-
-              <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                {filteredNotifications.length !== notifications.length
-                  ? `${filteredNotifications.length} of ${notifications.length} Alerts`
-                  : `${notifications.length} Total Alerts`}
-              </span>
-            </div>
-
             <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div className="relative flex-1 max-w-sm flex items-center">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search notifications..."
-                  className="w-full pl-9 pr-8 py-1.5 text-xs rounded border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-white transition shadow-xs"
+                  className="w-full pl-9 pr-8 py-2 text-sm rounded border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 bg-white transition shadow-xs"
                 />
                 {searchQuery && (
                   <button
@@ -414,7 +379,7 @@ export default function Notifications({
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <tr className="bg-slate-50/80 border-b border-slate-200 text-[14px] font-bold tracking-wider text-slate-500">
                       <th className="py-3 px-5">Trash Bin</th>
                       <th className="py-3 px-4">Fill Percentage</th>
                       <th className="py-3 px-4">Recipient</th>
@@ -447,9 +412,6 @@ export default function Notifications({
                               <div>
                                 <div className="font-bold text-slate-900 text-sm">
                                   {item.binName || 'Trash Bin'}
-                                </div>
-                                <div className="text-[11px] text-slate-400 font-mono">
-                                  {item.deviceIp || effectiveDeviceIp}
                                 </div>
                               </div>
                             </div>

@@ -8,6 +8,10 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    match /esp32_sessions/{docId} {
+      allow read, write: if true;
+    }
+
     match /trash_records/{docId} {
       allow read, write: if true;
     }

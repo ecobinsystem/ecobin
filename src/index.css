@@ -56,9 +56,15 @@
   }
 
   html,
-  body {
+  body,
+  #root {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
     overflow: visible !important;
     width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
   }
 
   .overflow-x-auto,

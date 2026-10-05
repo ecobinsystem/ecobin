@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import {
-  Leaf,
   Lock,
   Eye,
   EyeOff,
@@ -8,9 +7,11 @@ import {
   ArrowRight,
   AlertCircle
 } from 'lucide-react'
+import logo from '../../public/img/logo.png'
 import { db } from '../../firebase'
 import { collection, getDocs } from 'firebase/firestore'
 import ForgotPasswordModal from '../modal/ForgotPasswordModal'
+import { checkContactNumber } from '../checker/contactChecker'
 
 async function sha256(message) {
   const msgBuffer = new TextEncoder().encode(message)
@@ -27,6 +28,51 @@ export default function Login({ onLogin, onForgotPassword }) {
   const [error, setError] = useState('')
   const [showForgotModal, setShowForgotModal] = useState(false)
 
+  const handleContactChange = (e) => {
+    let val = e.target.value
+    if (val.startsWith('+')) {
+      val = '+' + val.slice(1).replace(/\D/g, '')
+    } else {
+      val = val.replace(/\D/g, '')
+    }
+    if (val.startsWith('+63') || val.startsWith('+')) {
+      val = val.slice(0, 13)
+    } else if (val.startsWith('09') || val.startsWith('0')) {
+      val = val.slice(0, 11)
+    } else {
+      val = val.slice(0, 13)
+    }
+    setIdentifier(val)
+    if (error) setError('')
+  }
+
+  const getContactFieldError = () => {
+    if (!identifier) return ''
+    const val = identifier.trim()
+    if (!val.startsWith('+63') && !val.startsWith('09')) {
+      return 'Must start with 09 or +63'
+    }
+    if (val.startsWith('+63')) {
+      if (!/^\+63\d*$/.test(val)) {
+        return 'Must contain only digits after +63'
+      }
+      if (val.length < 13) {
+        return `Must be 13 digits for +63 (${val.length}/13)`
+      }
+    }
+    if (val.startsWith('09')) {
+      if (!/^09\d*$/.test(val)) {
+        return 'Must contain only digits'
+      }
+      if (val.length < 11) {
+        return `Must be 11 digits for 09 (${val.length}/11)`
+      }
+    }
+    return ''
+  }
+
+  const contactFieldError = getContactFieldError()
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -34,6 +80,12 @@ export default function Login({ onLogin, onForgotPassword }) {
     const entered = identifier.trim()
     if (!entered) {
       setError('Please enter your contact number.')
+      return
+    }
+
+    const contactCheck = checkContactNumber(entered)
+    if (!contactCheck.isValid) {
+      setError(contactCheck.error)
       return
     }
 
@@ -95,7 +147,9 @@ export default function Login({ onLogin, onForgotPassword }) {
       setLoading(false)
       if (onLogin) {
         onLogin({
+          id: foundDoc.id,
           identifier: entered,
+          contact: userData.contact || entered,
           name: userData.name || foundDoc.id,
           role: userData.role
         })
@@ -108,20 +162,15 @@ export default function Login({ onLogin, onForgotPassword }) {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 select-none">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-200/50 p-6 sm:p-8">
+      <div className="w-full max-w-md rounded-xl shadow-lg shadow-slate-500">
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-xl shadow-slate-200/50 p-6 sm:p-8">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-500/20 mb-2.5">
-              <Leaf className="w-7 h-7" />
-            </div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
-              EcoBin
-            </h1>
+            <img src={logo} alt="EcoBin Logo" className="w-32 h-32 object-contain mx-auto mb-2" />
             <p className="font-semibold text-slate-500 mt-0.5 mb-5">
               Smart Waste Segregation Monitoring and Collection System
             </p>
             <p className="mt-5 text-sm text-slate-500 mt-0.5">
-              Enter your credentials to access the telemetry dashboard
+              Enter your credentials to access the system
             </p>
           </div>
 
@@ -133,8 +182,8 @@ export default function Login({ onLogin, onForgotPassword }) {
           )}
 
           <form onSubmit={handleLoginSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            <div className='mb-4'>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 Contact Number
               </label>
               <div className="relative">
@@ -144,19 +193,22 @@ export default function Login({ onLogin, onForgotPassword }) {
                 <input
                   type="tel"
                   value={identifier}
-                  onChange={(e) => {
-                    setIdentifier(e.target.value)
-                    if (error) setError('')
-                  }}
+                  onChange={handleContactChange}
+                  maxLength={identifier.startsWith('0') ? 11 : 13}
                   placeholder="e.g. +639123456789 or 09123456789"
                   autoComplete="tel"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-800 transition placeholder:text-slate-400 font-medium font-mono"
                 />
               </div>
+              {contactFieldError && (
+                <p className="text-[11px] text-rose-500 mt-1 font-medium">
+                  {contactFieldError}
+                </p>
+              )}
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center justify-between mb-2">
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Password
                 </label>
@@ -203,7 +255,7 @@ export default function Login({ onLogin, onForgotPassword }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 active:scale-[0.99] disabled:opacity-60 transition cursor-pointer"
+              className="mt-2 py-2 px-2 m-auto flex items-center justify-center w-full gap-1 text-sm sm:text-sm font-bold rounded bg-emerald-600 text-white hover:bg-emerald-700 transition cursor-pointer"
             >
               {loading ? (
                 <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
