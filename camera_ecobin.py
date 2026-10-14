@@ -109,14 +109,15 @@ COOLDOWN_DURATION = 5.0
 opening_until = 0.0
 opening_waste_type = ""
 
-ROI_X1 = 140
-ROI_Y1 = 80
-ROI_X2 = 500
-ROI_Y2 = 400
-PROXIMITY_MIN_AREA = 10000
+ROI_X1 = 160
+ROI_Y1 = 100
+ROI_X2 = 480
+ROI_Y2 = 380
+PROXIMITY_MIN_AREA = 40000
 avg_bg = None
 bg_warmup = 25
 object_detected = False
+bare_hand_detected = False
 human_detected = False
 detected_humans = []
 was_opening = False
@@ -165,7 +166,7 @@ def send_image_worker(frame_to_send):
         response = requests.post(
             CLASSIFY_URL,
             files=files,
-            timeout=8
+            timeout=15
         )
 
         if response.status_code == 200:
@@ -344,11 +345,12 @@ while running:
             small_gray = cv2.resize(gray_full, (0, 0), fx=0.5, fy=0.5)
             detected_faces = face_cascade.detectMultiScale(
                 small_gray,
-                scaleFactor=1.2,
-                minNeighbors=4,
-                minSize=(25, 25)
+                scaleFactor=1.15,
+                minNeighbors=8,
+                minSize=(50, 50)
             )
-            human_detected = len(detected_faces) > 0
+            real_faces = [f for f in detected_faces if (f[1] + f[3] // 2) * 2 < 260]
+            human_detected = len(real_faces) > 0
         except Exception:
             human_detected = False
     elif face_cascade is None:
@@ -382,8 +384,20 @@ while running:
                 max_contour_area = area
 
         object_detected = max_contour_area >= PROXIMITY_MIN_AREA
+        if object_detected:
+            ycrcb = cv2.cvtColor(roi, cv2.COLOR_BGR2YCrCb)
+            skin_mask = cv2.inRange(ycrcb, (0, 133, 77), (255, 173, 127))
+            motion_skin = cv2.bitwise_and(skin_mask, thresh)
+            motion_total = np.count_nonzero(thresh)
+            if motion_total > 0 and (np.count_nonzero(motion_skin) / motion_total) > 0.55:
+                object_detected = False
+                bare_hand_detected = True
+            else:
+                bare_hand_detected = False
+        else:
+            bare_hand_detected = False
 
-        if not object_detected:
+        if not object_detected and not bare_hand_detected:
             cv2.accumulateWeighted(gray_roi, avg_bg, 0.05)
 
     now = time.time()
@@ -534,6 +548,8 @@ while running:
 
         if scan_ready:
             zone_label = "OBJECT SCANNED - CLASSIFYING"
+        elif bare_hand_detected:
+            zone_label = "BARE HAND DETECTED - HOLD WASTE"
         elif object_detected:
             zone_label = f"SCANNING... {int(scan_progress * 100)}%"
         else:

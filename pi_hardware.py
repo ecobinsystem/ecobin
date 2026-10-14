@@ -25,8 +25,8 @@ PIN_ECHO_RESIDUAL = int(os.getenv("PIN_ECHO_RESIDUAL", "6"))
 
 PIN_BUZZER = int(os.getenv("PIN_BUZZER", "18"))
 
-BIN_DEPTH_CM = float(os.getenv("BIN_DEPTH_CM", "30.0"))
-BIN_EMPTY_CM = float(os.getenv("BIN_EMPTY_CM", "28.0"))
+BIN_DEPTH_CM = float(os.getenv("BIN_DEPTH_CM", "40.0"))
+BIN_EMPTY_CM = float(os.getenv("BIN_EMPTY_CM", "40.0"))
 BIN_FULL_CM = float(os.getenv("BIN_FULL_CM", "5.0"))
 SERVO_OPEN_SECONDS = float(os.getenv("SERVO_OPEN_SECONDS", "5.0"))
 
@@ -194,12 +194,24 @@ class HardwareController:
             else:
                 pct = int(round(((BIN_EMPTY_CM - dist_cm) / (BIN_EMPTY_CM - BIN_FULL_CM)) * 100.0))
             pct = max(0, min(100, pct))
-            results[key] = pct
-            results[f"{key}_distance_cm"] = round(dist_cm, 1)
+            if pct >= 95:
+                status = "FULL"
+            elif pct >= 80:
+                status = "WARNING"
+            elif pct >= 50:
+                status = "HALF"
+            else:
+                status = "NORMAL"
 
-        self.current_levels["biodegradable"] = results["biodegradable"]
-        self.current_levels["recyclable"] = results["recyclable"]
-        self.current_levels["residual"] = results["residual"]
+            results[key] = {
+                "distanceCm": round(dist_cm, 1),
+                "fillPercentage": pct,
+                "status": status,
+            }
+
+        self.current_levels["biodegradable"] = results["biodegradable"]["fillPercentage"]
+        self.current_levels["recyclable"] = results["recyclable"]["fillPercentage"]
+        self.current_levels["residual"] = results["residual"]["fillPercentage"]
         return results
 
     def start_telemetry(self, interval: float = 10.0, callback: Callable[[dict[str, Any]], None] | None = None) -> None:
@@ -213,7 +225,11 @@ class HardwareController:
                 try:
                     levels = self.read_all_levels()
                     if self._on_level_callback:
-                        self._on_level_callback(levels)
+                        saved = self._on_level_callback(levels)
+                        bio_p = levels["biodegradable"]["fillPercentage"]
+                        rec_p = levels["recyclable"]["fillPercentage"]
+                        res_p = levels["residual"]["fillPercentage"]
+                        print(f"[Telemetry] Firestore write: {'SUCCESS' if saved else 'FAILED'} (Bio={bio_p}% Rec={rec_p}% Res={res_p}%)")
                 except Exception as e:
                     print(f"Telemetry error: {e}")
                 time.sleep(interval)
