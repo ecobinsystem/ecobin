@@ -19,6 +19,7 @@ from firebase_service import (
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from pi_hardware import hardware
 
 
 # ============================================================
@@ -58,7 +59,7 @@ ESP32_URL = f"http://{ESP32_IP}"
 ESP32_DEVICE_TOKEN = os.getenv("ESP32_DEVICE_TOKEN", "").strip()
 
 # Prevent repeated commands too quickly
-COMMAND_COOLDOWN = 10.0
+COMMAND_COOLDOWN = 5.0
 last_command_time = 0.0
 
 
@@ -147,42 +148,9 @@ print(
 print()
 
 
-# ============================================================
-# TEST ESP32 CONNECTION
-# ============================================================
-
-def test_esp32_connection():
-
-    print("=" * 60)
-    print("Testing connection to ESP32...")
-    print("ESP32:", ESP32_URL)
-    print("=" * 60)
-
-    try:
-
-        response = requests.get(
-            f"{ESP32_URL}/",
-            timeout=5
-        )
-
-        if response.status_code != 200:
-            response = requests.get(
-                f"{ESP32_URL}/api/status",
-                timeout=5
-            )
-
-        print("ESP32 connection: SUCCESS")
-        print("HTTP status:", response.status_code)
-        print("ESP32 response:", response.text)
-
-        return True
-
-    except requests.RequestException as e:
-
-        print("ESP32 connection: FAILED")
-        print("Error:", e)
-
-        return False
+def init_hardware():
+    hardware.initialize()
+    hardware.start_telemetry(interval=10.0, callback=record_trash_level)
 
 
 # ============================================================
@@ -273,240 +241,23 @@ def classify_image(jpeg_bytes):
 # ============================================================
 
 def send_to_esp32(label):
-
     global last_command_time
-
     current_time = time.time()
-
-    # --------------------------------------------------------
-    # COMMAND COOLDOWN
-    # --------------------------------------------------------
-
-    elapsed = (
-        current_time
-        - last_command_time
-    )
+    elapsed = current_time - last_command_time
 
     if elapsed < COMMAND_COOLDOWN:
-
-        remaining = (
-            COMMAND_COOLDOWN
-            - elapsed
-        )
-
-        print()
-        print(
-            "ESP32 command skipped."
-        )
-
-        print(
-            f"Cooldown active: "
-            f"{remaining:.1f} seconds remaining"
-        )
-
+        remaining = COMMAND_COOLDOWN - elapsed
         return {
             "success": False,
             "sent": False,
-            "message": "Command cooldown active"
+            "message": "Command cooldown active",
+            "cooldown_remaining": round(remaining, 1)
         }
 
-
-    # --------------------------------------------------------
-    # CONVERT LABEL
-    # --------------------------------------------------------
-
-    command = label.strip().upper()
-
-    allowed_commands = {
-        "BIODEGRADABLE",
-        "RECYCLABLE",
-        "RESIDUAL"
-    }
-
-    if command not in allowed_commands:
-
-        return {
-            "success": False,
-            "sent": False,
-            "message": (
-                f"Invalid waste type: {command}"
-            )
-        }
-
-
-    # --------------------------------------------------------
-    # SEND TO ESP32
-    # --------------------------------------------------------
-
-    print()
-    print("=" * 60)
-    print("SENDING COMMAND TO ESP32")
-    print("=" * 60)
-
-    print(
-        "ESP32 URL:",
-        ESP32_URL
-    )
-
-    print(
-        "Waste type:",
-        command
-    )
-
-    try:
-
-        response = requests.get(
-            f"{ESP32_URL}/classify",
-            params={
-                "type": command
-            },
-            timeout=2
-        )
-
-        if response.status_code == 404:
-            response = requests.get(
-                f"{ESP32_URL}/api/command",
-                params={
-                    "cmd": command
-                },
-                timeout=2
-            )
-
-        print(
-            "ESP32 HTTP status:",
-            response.status_code
-        )
-
-        print(
-            "ESP32 response:",
-            response.text
-        )
-
-        print("=" * 60)
-
-
-        # ----------------------------------------------------
-        # SUCCESS
-        # ----------------------------------------------------
-
-        if response.status_code == 200:
-
-            last_command_time = current_time
-
-            return {
-                "success": True,
-                "sent": True,
-                "message": (
-                    f"Sent {label} command "
-                    "to ESP32"
-                ),
-                "esp32_response": response.text
-            }
-
-
-        # ----------------------------------------------------
-        # BIN FULL
-        # ----------------------------------------------------
-
-        elif response.status_code == 409:
-
-            return {
-                "success": False,
-                "sent": False,
-                "message": (
-                    f"{label} bin is full"
-                ),
-                "esp32_response": response.text
-            }
-
-
-        # ----------------------------------------------------
-        # OTHER ERROR
-        # ----------------------------------------------------
-
-        else:
-
-            return {
-                "success": False,
-                "sent": False,
-                "message": (
-                    f"ESP32 returned HTTP "
-                    f"{response.status_code}"
-                ),
-                "esp32_response": response.text
-            }
-
-
-    except requests.Timeout:
-
-        print()
-        print("=" * 60)
-        print("ESP32 REQUEST TIMEOUT")
-        print("=" * 60)
-
-        print(
-            "The ESP32 did not respond within 2 seconds."
-        )
-
-        print("=" * 60)
-
-        return {
-            "success": False,
-            "sent": False,
-            "message": (
-                "ESP32 request timed out"
-            )
-        }
-
-
-    except requests.ConnectionError as e:
-
-        print()
-        print("=" * 60)
-        print("ESP32 CONNECTION ERROR")
-        print("=" * 60)
-
-        print(
-            "Could not connect to ESP32."
-        )
-
-        print(
-            "Error:",
-            e
-        )
-
-        print("=" * 60)
-
-        return {
-            "success": False,
-            "sent": False,
-            "message": (
-                "Could not connect to ESP32"
-            )
-        }
-
-
-    except requests.RequestException as e:
-
-        print()
-        print("=" * 60)
-        print("ESP32 REQUEST ERROR")
-        print("=" * 60)
-
-        print(
-            "Error:",
-            e
-        )
-
-        print("=" * 60)
-
-        return {
-            "success": False,
-            "sent": False,
-            "message": (
-                f"ESP32 request failed: {e}"
-            )
-        }
+    res = hardware.open_lid(label)
+    if res.get("sent"):
+        last_command_time = current_time
+    return res
 
 
 # ============================================================
@@ -759,70 +510,14 @@ def classify():
     methods=["GET"]
 )
 def esp32_status():
-
-    try:
-
-        response = requests.get(
-            f"{ESP32_URL}/status",
-            timeout=5
-        )
-
-        esp32_data = response.json() if response.status_code == 200 else None
-        firebase_saved = (
-            record_esp32_status(esp32_data)
-            if isinstance(esp32_data, dict)
-            else False
-        )
-
-        return jsonify({
-
-            "python_server": True,
-
-            "esp32_online": (
-                response.status_code == 200
-            ),
-
-            "esp32_http_status": (
-                response.status_code
-            ),
-
-            "esp32_response": (
-                response.text
-            ),
-
-            "esp32_data": esp32_data,
-
-            "firebase_saved": firebase_saved
-
-        })
-
-
-    except requests.Timeout:
-
-        return jsonify({
-
-            "python_server": True,
-
-            "esp32_online": False,
-
-            "error": (
-                "ESP32 status request timed out"
-            )
-
-        }), 503
-
-
-    except requests.RequestException as e:
-
-        return jsonify({
-
-            "python_server": True,
-
-            "esp32_online": False,
-
-            "error": str(e)
-
-        }), 503
+    levels = hardware.read_all_levels()
+    return jsonify({
+        "python_server": True,
+        "esp32_online": True,
+        "hardware_mode": "gpio" if hardware.enabled else "simulated",
+        "esp32_data": levels,
+        "firebase_saved": True
+    })
 
 
 # ============================================================
@@ -847,9 +542,7 @@ def status():
             CONFIDENCE_THRESHOLD
         ),
 
-        "esp32_ip": ESP32_IP,
-
-        "esp32_url": ESP32_URL,
+        "hardware_mode": "gpio" if hardware.enabled else "simulated",
 
         "cooldown": COMMAND_COOLDOWN
 
@@ -861,7 +554,6 @@ def status():
     methods=["GET"]
 )
 def firebase_connection_status():
-    """Show Firebase connection diagnostics without returning secrets."""
     return jsonify(firebase_status())
 
 
@@ -874,15 +566,9 @@ def api_trash_level():
         data = request.get_json(silent=True) or request.form.to_dict() or {}
         saved = record_trash_level(data)
         return jsonify({"success": saved, "data": data})
-    try:
-        response = requests.get(f"{ESP32_URL}/api/level", timeout=3)
-        if response.status_code == 200:
-            level_data = response.json()
-            saved = record_trash_level(level_data)
-            return jsonify({"success": True, "saved_to_firestore": saved, "level": level_data})
-        return jsonify({"success": False, "error": f"ESP32 status {response.status_code}"}), 502
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 503
+    level_data = hardware.read_all_levels()
+    saved = record_trash_level(level_data)
+    return jsonify({"success": True, "saved_to_firestore": saved, "level": level_data})
 
 
 @app.route(
@@ -890,7 +576,6 @@ def api_trash_level():
     methods=["POST"]
 )
 def receive_device_status():
-    """Receive authenticated ESP32 bin data for a Vercel-hosted dashboard."""
     if not ESP32_DEVICE_TOKEN:
         return jsonify({
             "ok": False,
@@ -938,7 +623,7 @@ def home():
 
         "status": "running",
 
-        "esp32": ESP32_URL
+        "hardware_mode": "gpio" if hardware.enabled else "simulated"
 
     })
 
@@ -949,16 +634,7 @@ def home():
 
 if __name__ == "__main__":
 
-    # --------------------------------------------------------
-    # TEST ESP32
-    # --------------------------------------------------------
-
-    test_esp32_connection()
-
-
-    # --------------------------------------------------------
-    # START FLASK
-    # --------------------------------------------------------
+    init_hardware()
 
     print()
     print("=" * 60)
@@ -967,10 +643,9 @@ if __name__ == "__main__":
 
     print()
 
-    print("Laptop server: http://127.0.0.1:5000")
-    print("Network server: http://0.0.0.0:5000")
-    print("ESP32:", ESP32_URL)
-    print("Camera -> AI -> ESP32 -> Servo")
+    print("Server URL: http://0.0.0.0:5000")
+    print("Hardware Mode:", "Raspberry Pi GPIO" if hardware.enabled else "Simulated")
+    print("Camera -> AI -> Raspberry Pi GPIO -> Servo")
     print("=" * 60)
     print()
 

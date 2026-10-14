@@ -1,9 +1,19 @@
 from pathlib import Path
+import os
+import signal
 import time
 import cv2
 import requests
 import threading
 import numpy as np
+
+HEADLESS = not bool(os.environ.get("DISPLAY"))
+
+running = True
+def sig_handler(sig, frame):
+    global running
+    running = False
+signal.signal(signal.SIGINT, sig_handler)
 
 
 # ============================================================
@@ -40,25 +50,25 @@ MIN_CONFIDENCE = 0.60
 # OPEN CAMERA
 # ============================================================
 
-camera = cv2.VideoCapture(CAMERA_INDEX)
+def init_camera():
+    backends = [cv2.CAP_V4L2, cv2.CAP_ANY] if hasattr(cv2, "CAP_V4L2") else [cv2.CAP_ANY]
+    for idx in (CAMERA_INDEX, 0, 1, 2, -1):
+        for b in backends:
+            try:
+                cap = cv2.VideoCapture(idx, b)
+                if cap.isOpened():
+                    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+                    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+                    for _ in range(5):
+                        ret, test_frame = cap.read()
+                        if ret and test_frame is not None:
+                            return cap
+                    cap.release()
+            except Exception:
+                pass
+    raise RuntimeError("Could not open or read from any camera.")
 
-if not camera.isOpened():
-
-    raise RuntimeError(
-        "Could not open the laptop camera. "
-        "Try CAMERA_INDEX = 1 if another camera is available."
-    )
-
-
-camera.set(
-    cv2.CAP_PROP_FRAME_WIDTH,
-    640
-)
-
-camera.set(
-    cv2.CAP_PROP_FRAME_HEIGHT,
-    480
-)
+camera = init_camera()
 
 
 # ============================================================
@@ -95,7 +105,7 @@ last_message = "Waiting for AI..."
 
 last_command_status = "NOT SENT"
 is_sending = False
-COOLDOWN_DURATION = 10.0
+COOLDOWN_DURATION = 5.0
 opening_until = 0.0
 opening_waste_type = ""
 
@@ -107,9 +117,20 @@ PROXIMITY_MIN_AREA = 10000
 avg_bg = None
 bg_warmup = 25
 object_detected = False
+human_detected = False
+detected_humans = []
 was_opening = False
-SCAN_DURATION = 3.0
+SCAN_DURATION = 2.0
 object_detected_start = None
+
+face_cascade = None
+try:
+    if hasattr(cv2, "CascadeClassifier") and hasattr(cv2, "data") and hasattr(cv2.data, "haarcascades"):
+        cascade_file = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+        face_cascade = cv2.CascadeClassifier(cascade_file)
+except Exception:
+    face_cascade = None
+frame_count = 0
 
 
 def send_image_worker(frame_to_send):
@@ -300,18 +321,38 @@ def send_image_worker(frame_to_send):
 # MAIN CAMERA LOOP
 # ============================================================
 
-while True:
+consecutive_failures = 0
+while running:
 
     success, frame = camera.read()
 
-    if not success:
+    if not success or frame is None:
+        consecutive_failures += 1
+        if consecutive_failures > 10:
+            print("Could not read frame from camera.")
+            break
+        time.sleep(0.05)
+        continue
 
-        print(
-            "Could not read frame from camera."
-        )
+    consecutive_failures = 0
 
-        break
 
+    frame_count += 1
+    if face_cascade is not None and frame_count % 3 == 0:
+        try:
+            gray_full = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            small_gray = cv2.resize(gray_full, (0, 0), fx=0.5, fy=0.5)
+            detected_faces = face_cascade.detectMultiScale(
+                small_gray,
+                scaleFactor=1.2,
+                minNeighbors=4,
+                minSize=(25, 25)
+            )
+            human_detected = len(detected_faces) > 0
+        except Exception:
+            human_detected = False
+    elif face_cascade is None:
+        human_detected = False
 
     roi = frame[ROI_Y1:ROI_Y2, ROI_X1:ROI_X2]
     gray_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
@@ -366,7 +407,12 @@ while True:
         print("=" * 60)
         print()
 
-    if object_detected and (now >= opening_until):
+    if human_detected:
+        object_detected = False
+        object_detected_start = None
+        scan_progress = 0.0
+        scan_ready = False
+    elif object_detected and (now >= opening_until):
         if object_detected_start is None:
             object_detected_start = now
         held_duration = now - object_detected_start
@@ -382,7 +428,7 @@ while True:
     # SEND IMAGE TO FLASK
     # ========================================================
 
-    if (now >= opening_until) and scan_ready and (now - last_send >= SEND_INTERVAL) and not is_sending:
+    if (now >= opening_until) and scan_ready and not human_detected and (now - last_send >= SEND_INTERVAL) and not is_sending:
 
         last_send = now
         is_sending = True
@@ -466,10 +512,14 @@ while True:
             2
         )
 
-        cv2.imshow(
-            "ECOBIN - Live Waste Classification",
-            display_frame
-        )
+        if not HEADLESS:
+            try:
+                cv2.imshow(
+                    "ECOBIN - Live Waste Classification",
+                    display_frame
+                )
+            except Exception:
+                pass
 
     else:
 
@@ -499,7 +549,7 @@ while True:
             2
         )
 
-        if object_detected:
+        if object_detected and not human_detected:
             bar_y = ROI_Y2 + 10
             fill_w = int((ROI_X2 - ROI_X1) * scan_progress)
             cv2.rectangle(
@@ -590,26 +640,23 @@ while True:
             2
         )
 
-        cv2.imshow(
-            "ECOBIN - Live Waste Classification",
-            frame
-        )
-
-
-    # ============================================================
-    # QUIT
-    # ============================================================
-
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
-
-        break
-
-    elif key == ord("r"):
-
-        avg_bg = None
-        bg_warmup = 25
-        object_detected_start = None
+        if not HEADLESS:
+            try:
+                cv2.imshow(
+                    "ECOBIN - Live Waste Classification",
+                    frame
+                )
+                key = cv2.waitKey(1) & 0xFF
+                if key == ord("q"):
+                    break
+                elif key == ord("r"):
+                    avg_bg = None
+                    bg_warmup = 25
+                    object_detected_start = None
+            except Exception:
+                pass
+        else:
+            time.sleep(0.01)
 
 
 # ============================================================
@@ -618,7 +665,11 @@ while True:
 
 camera.release()
 
-cv2.destroyAllWindows()
+if not HEADLESS:
+    try:
+        cv2.destroyAllWindows()
+    except Exception:
+        pass
 
 
 print()

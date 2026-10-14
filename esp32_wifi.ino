@@ -33,7 +33,7 @@ const int SERVO_REC_PIN = 14;
 const int SERVO_RES_PIN = 27;
 const int SERVO_CLOSED_ANGLE = 180;
 const int SERVO_OPEN_ANGLE = 0;
-const unsigned long SERVO_OPEN_DURATION_MS = 8000;
+const unsigned long SERVO_OPEN_DURATION_MS = 3000;
 
 const int TRIG_BIO_PIN = 5;
 const int ECHO_BIO_PIN = 18;
@@ -622,7 +622,7 @@ void loop() {
   }
 
   static unsigned long lastTrashLevelSend = 0;
-  if (millis() - lastTrashLevelSend > 5000) {
+  if (millis() - lastTrashLevelSend > 10000) {
     lastTrashLevelSend = millis();
     sendTrashLevelToFirestore();
   }

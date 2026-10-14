@@ -830,10 +830,10 @@ export default function Reports({
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-purple-200 shadow-sm flex flex-col justify-between print:border-slate-300">
+            <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm flex flex-col justify-between print:border-slate-300">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="p-2 rounded-xl bg-purple-50 text-purple-600 border border-purple-200">
+                  <span className="p-2 rounded-xl bg-slate-100 text-slate-900 border border-slate-300">
                     <Trash2 className="w-5 h-5" />
                   </span>
                   <div>
@@ -841,13 +841,13 @@ export default function Reports({
                     <p className="text-[11px] text-slate-500 font-medium">Compartment 3</p>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-50 text-purple-800 border border-purple-200">
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-900 border border-slate-300">
                   Full &ge; 85%
                 </span>
               </div>
 
               <div className="my-5">
-                <div className="text-4xl sm:text-5xl font-black text-purple-600 font-mono tracking-tight">
+                <div className="text-4xl sm:text-5xl font-black text-slate-900 font-mono tracking-tight">
                   {stats.resFullTimes}
                 </div>
                 <div className="text-xs font-semibold text-slate-500 mt-1 uppercase tracking-wider">
@@ -857,7 +857,7 @@ export default function Reports({
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
                 <span>Current Fill: <strong className="font-mono text-slate-900">{stats.latestResFill}%</strong></span>
-                <span className="text-purple-700 font-semibold">{stats.resStatus}</span>
+                <span className="text-slate-900 font-semibold">{stats.resStatus}</span>
               </div>
             </div>
           </section>
@@ -898,7 +898,7 @@ export default function Reports({
                       </span>
                     </th>
                     <th className="py-3.5 px-5 text-center print:py-2 print:px-2 print:w-[18%]">
-                      <span className="inline-flex items-center gap-1.5 text-purple-700 font-bold">
+                      <span className="inline-flex items-center gap-1.5 text-slate-900 font-bold">
                         <Trash2 className="w-3.5 h-3.5" />
                         Residual
                       </span>
@@ -941,7 +941,7 @@ export default function Reports({
                         <span
                           className={`inline-block px-3 py-1 rounded-full font-mono text-xs font-bold border print:px-2 print:py-0.5 ${
                             row.resCount > 0
-                              ? 'bg-purple-50 text-purple-800 border-purple-200'
+                              ? 'bg-slate-100 text-slate-900 border-slate-300'
                               : 'bg-slate-50 text-slate-400 border-slate-200'
                           }`}
                         >
@@ -1024,13 +1024,13 @@ export default function Reports({
                                   : isRec
                                   ? 'bg-blue-50 text-blue-800 border-blue-200'
                                   : isRes
-                                  ? 'bg-purple-50 text-purple-800 border-purple-200'
+                                  ? 'bg-slate-100 text-slate-900 border-slate-300'
                                   : 'bg-slate-50 text-slate-800 border-slate-200'
                               }`}
                             >
                               {isBio && <Leaf className="w-3 h-3 text-emerald-600" />}
                               {isRec && <Recycle className="w-3 h-3 text-blue-600" />}
-                              {isRes && <Trash2 className="w-3 h-3 text-purple-600" />}
+                              {isRes && <Trash2 className="w-3 h-3 text-slate-900" />}
                               {item.label}
                             </span>
                           </td>

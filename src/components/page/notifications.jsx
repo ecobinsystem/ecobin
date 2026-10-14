@@ -124,8 +124,8 @@ export default function Notifications({
     }
     return {
       icon: Trash2,
-      iconBg: 'bg-purple-50 text-purple-600 border-purple-200',
-      barBg: 'bg-purple-500'
+      iconBg: 'bg-slate-100 text-slate-900 border-slate-300',
+      barBg: 'bg-slate-900'
     }
   }
 
