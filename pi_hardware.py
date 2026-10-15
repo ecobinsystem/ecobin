@@ -14,20 +14,21 @@ PIN_SERVO_BIO = int(os.getenv("PIN_SERVO_BIO", "17"))
 PIN_SERVO_RECYCLE = int(os.getenv("PIN_SERVO_RECYCLE", "16"))
 PIN_SERVO_RESIDUAL = int(os.getenv("PIN_SERVO_RESIDUAL", "26"))
 
-PIN_TRIG_BIO = int(os.getenv("PIN_TRIG_BIO", "23"))
-PIN_ECHO_BIO = int(os.getenv("PIN_ECHO_BIO", "24"))
+PIN_TRIG_BIO = int(os.getenv("PIN_TRIG_BIO", "5"))
+PIN_ECHO_BIO = int(os.getenv("PIN_ECHO_BIO", "6"))
 
 PIN_TRIG_RECYCLE = int(os.getenv("PIN_TRIG_RECYCLE", "25"))
 PIN_ECHO_RECYCLE = int(os.getenv("PIN_ECHO_RECYCLE", "27"))
 
-PIN_TRIG_RESIDUAL = int(os.getenv("PIN_TRIG_RESIDUAL", "5"))
-PIN_ECHO_RESIDUAL = int(os.getenv("PIN_ECHO_RESIDUAL", "6"))
+PIN_TRIG_RESIDUAL = int(os.getenv("PIN_TRIG_RESIDUAL", "23"))
+PIN_ECHO_RESIDUAL = int(os.getenv("PIN_ECHO_RESIDUAL", "24"))
 
 PIN_BUZZER = int(os.getenv("PIN_BUZZER", "18"))
 
 BIN_DEPTH_CM = float(os.getenv("BIN_DEPTH_CM", "40.0"))
 BIN_EMPTY_CM = float(os.getenv("BIN_EMPTY_CM", "40.0"))
-BIN_FULL_CM = float(os.getenv("BIN_FULL_CM", "5.0"))
+BIN_FULL_CM = float(os.getenv("BIN_FULL_CM", "13.0"))
+BIN_EMPTY_MARGIN_CM = float(os.getenv("BIN_EMPTY_MARGIN_CM", "3.0"))
 SERVO_OPEN_SECONDS = float(os.getenv("SERVO_OPEN_SECONDS", "5.0"))
 
 SERVO_CLOSED_ANGLE = 0
@@ -155,13 +156,13 @@ class HardwareController:
             "hardware_mode": "gpio" if self.enabled else "simulated",
         }
 
-    def _read_sensor_cm(self, key: str) -> float:
+    def _read_single_ping_cm(self, key: str) -> float | None:
         if not self.enabled or key not in self.sensors:
-            return BIN_EMPTY_CM
+            return None
         try:
             trig, echo = self.sensors[key]
             trig.off()
-            time.sleep(0.02)
+            time.sleep(0.01)
             trig.on()
             time.sleep(0.00001)
             trig.off()
@@ -169,30 +170,47 @@ class HardwareController:
             start_wait = time.perf_counter()
             while not echo.is_active:
                 if time.perf_counter() - start_wait > 0.03:
-                    return BIN_EMPTY_CM
+                    return None
 
             pulse_start = time.perf_counter()
             while echo.is_active:
                 if time.perf_counter() - pulse_start > 0.03:
-                    return BIN_EMPTY_CM
+                    return None
             pulse_end = time.perf_counter()
 
             duration = pulse_end - pulse_start
             distance_cm = (duration * 34300.0) / 2.0
-            return round(distance_cm, 1)
+            if 2.0 <= distance_cm <= 150.0:
+                return round(distance_cm, 1)
+            return None
         except Exception:
+            return None
+
+    def _read_sensor_cm(self, key: str) -> float:
+        valid_reads = []
+        for _ in range(5):
+            val = self._read_single_ping_cm(key)
+            if val is not None:
+                valid_reads.append(val)
+            time.sleep(0.01)
+
+        if not valid_reads:
             return BIN_EMPTY_CM
+
+        valid_reads.sort()
+        return valid_reads[len(valid_reads) // 2]
 
     def read_all_levels(self) -> dict[str, Any]:
         results: dict[str, Any] = {}
         for key in ("biodegradable", "recyclable", "residual"):
             dist_cm = self._read_sensor_cm(key)
-            if dist_cm >= BIN_EMPTY_CM:
+            empty_limit = BIN_EMPTY_CM - BIN_EMPTY_MARGIN_CM
+            if dist_cm >= empty_limit:
                 pct = 0
             elif dist_cm <= BIN_FULL_CM:
                 pct = 100
             else:
-                pct = int(round(((BIN_EMPTY_CM - dist_cm) / (BIN_EMPTY_CM - BIN_FULL_CM)) * 100.0))
+                pct = int(round(((empty_limit - dist_cm) / (empty_limit - BIN_FULL_CM)) * 100.0))
             pct = max(0, min(100, pct))
             if pct >= 95:
                 status = "FULL"

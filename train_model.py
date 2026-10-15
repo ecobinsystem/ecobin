@@ -16,7 +16,7 @@ MODEL_PATH = BASE_DIR / "waste_classifier.keras"
 META_PATH = BASE_DIR / "class_names.json"
 TEST_MANIFEST = BASE_DIR / "test_manifest.json"
 
-CLASS_NAMES = ["biodegradable", "recyclable", "residual"]
+CLASS_NAMES = ["biodegradable", "human", "recyclable", "residual"]
 IMG_SIZE = 224
 BATCH_SIZE = 16
 SEED = 123

@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import time
 from typing import Any
 import urllib.request
 
@@ -201,9 +202,145 @@ def record_esp32_session(session_data: dict[str, Any]) -> bool:
         return False
 
 
+_last_sms_sent: dict[str, float] = {}
+_cached_pushbullet_device_key: str = ""
+
+
+def get_pushbullet_device_key(token: str) -> str | None:
+    global _cached_pushbullet_device_key
+    if _cached_pushbullet_device_key:
+        return _cached_pushbullet_device_key
+    try:
+        req = urllib.request.Request("https://api.pushbullet.com/v2/devices", headers={"Access-Token": token})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            for dev in data.get("devices", []):
+                if dev.get("has_sms") and dev.get("iden"):
+                    _cached_pushbullet_device_key = dev["iden"]
+                    return dev["iden"]
+            devices = data.get("devices", [])
+            if devices and devices[0].get("iden"):
+                _cached_pushbullet_device_key = devices[0]["iden"]
+                return devices[0]["iden"]
+    except Exception:
+        pass
+    return None
+
+
+def send_pushbullet_sms(phone: str, message: str) -> bool:
+    token = os.getenv("VITE_PUSHBULLET_ACCESS_TOKEN", "").strip() or os.getenv("PUSHBULLET_ACCESS_TOKEN", "").strip()
+    if not token or not phone:
+        return False
+    dev_key = get_pushbullet_device_key(token)
+    if not dev_key:
+        return False
+    try:
+        clean_phone = "".join(ch for ch in phone if ch.isdigit() or ch == "+")
+        if clean_phone.startswith("09"):
+            clean_phone = "+63" + clean_phone[1:]
+        elif clean_phone.startswith("639"):
+            clean_phone = "+" + clean_phone
+        elif not clean_phone.startswith("+"):
+            clean_phone = "+63" + clean_phone
+
+        url = "https://api.pushbullet.com/v2/texts"
+        body = json.dumps({
+            "data": {
+                "addresses": [clean_phone],
+                "message": message,
+                "target_device_iden": dev_key
+            }
+        }).encode("utf-8")
+        req = urllib.request.Request(url, data=body, headers={"Access-Token": token, "Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            return 200 <= resp.status < 300
+    except Exception as exc:
+        print(f"[Pushbullet Error] {exc}")
+        return False
+
+
+def get_recipients() -> list[dict[str, str]]:
+    results = []
+    if _mode == "rest" and _rest_project_id:
+        try:
+            url = f"https://firestore.googleapis.com/v1/projects/{_rest_project_id}/databases/(default)/documents/recipients?key={_rest_api_key}"
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                for doc in data.get("documents", []):
+                    fields = doc.get("fields", {})
+                    name = fields.get("name", {}).get("stringValue", "")
+                    contact = fields.get("contact", {}).get("stringValue", "") or fields.get("phone", {}).get("stringValue", "")
+                    if contact:
+                        results.append({"name": name, "contact": contact})
+        except Exception:
+            pass
+    elif _mode == "admin" and _database:
+        try:
+            for doc in _database.collection("recipients").stream():
+                data = doc.to_dict()
+                name = data.get("name", "")
+                contact = data.get("contact", "") or data.get("phone", "")
+                if contact:
+                    results.append({"name": name, "contact": contact})
+        except Exception:
+            pass
+    return results
+
+
+def check_and_notify_bin_levels(data: dict[str, Any]) -> None:
+    now = time.time()
+    for bin_key in ("biodegradable", "recyclable", "residual"):
+        bin_data = data.get(bin_key)
+        if not isinstance(bin_data, dict):
+            continue
+        fill = int(bin_data.get("fillPercentage", 0))
+        status = str(bin_data.get("status", "NORMAL")).upper()
+        if fill >= 80 or status in ("FULL", "WARNING", "NEARLY_FULL", "NEARLY FULL"):
+            last_time = _last_sms_sent.get(bin_key, 0)
+            if now - last_time < 300:
+                continue
+            _last_sms_sent[bin_key] = now
+            dist = bin_data.get("distanceCm", "--")
+            recips = get_recipients()
+            current_status = "FULL" if fill >= 100 or status == "FULL" else "WARNING"
+            bin_title = bin_key.capitalize()
+            msg = f"EcoBin Alert: {bin_title} waste compartment is at {fill}% capacity ({dist} cm clearance). Status: {current_status}."
+            recip_names = ", ".join(r["name"] for r in recips if r.get("name")) or "All Recipients"
+            recip_contacts = ", ".join(r["contact"] for r in recips if r.get("contact"))
+            for r in recips:
+                phone = r.get("contact")
+                if phone:
+                    ok = send_pushbullet_sms(phone, msg)
+                    print(f"[SMS Alert] {bin_title} ({fill}%): sent to {phone} - {'SUCCESS' if ok else 'FAILED'}")
+            notif_doc = {
+                "binName": bin_title,
+                "fillPercentage": fill,
+                "distanceCm": str(dist),
+                "status": current_status,
+                "recipientName": recip_names,
+                "recipientContact": recip_contacts,
+                "recipients": recips,
+                "deviceIp": "Raspberry Pi",
+            }
+            if _mode == "rest":
+                _rest_add_document("notifications", notif_doc)
+            elif _mode == "admin" and _database:
+                try:
+                    from firebase_admin import firestore
+                    _database.collection("notifications").add({
+                        **notif_doc,
+                        "createdAt": firestore.SERVER_TIMESTAMP,
+                    })
+                except Exception:
+                    pass
+
+
 def record_trash_level(data: dict[str, Any]) -> bool:
     if not initialize_firebase():
         return False
+    record_esp32_session({"status": "online", "connected": True, "device": "Raspberry Pi"})
+    check_and_notify_bin_levels(data)
     if _mode == "rest":
         return _rest_add_document("trash_records", data)
     try:

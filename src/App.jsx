@@ -37,7 +37,7 @@ export default function App() {
         setDeviceIp(currentIp)
       }
 
-      const hasRecentRecord = lastRecordTimestamp > 0 && (Date.now() - lastRecordTimestamp < 30000)
+      const hasRecentRecord = lastRecordTimestamp > 0 && (Date.now() - lastRecordTimestamp < 45000)
 
       let pingSuccess = false
 
@@ -45,14 +45,15 @@ export default function App() {
         try {
           const controller = new AbortController()
           const timeout = setTimeout(() => controller.abort(), 2000)
-          const res = await fetch(`http://${currentIp}/api/status`, {
-            signal: controller.signal,
-            mode: 'cors'
-          })
+          const targetUrl = currentIp.includes(':') ? `http://${currentIp}/api/status` : `http://${currentIp}:5000/api/status`
+          let res = await fetch(targetUrl, { signal: controller.signal, mode: 'cors' }).catch(() => null)
+          if (!res || !res.ok) {
+            res = await fetch(`http://${currentIp}/api/status`, { signal: controller.signal, mode: 'cors' }).catch(() => null)
+          }
           clearTimeout(timeout)
-          if (res.ok) {
+          if (res && res.ok) {
             const data = await res.json().catch(() => null)
-            pingSuccess = data ? (data.connected === true || data.status === 'connected') : true
+            pingSuccess = data ? (data.connected === true || data.status === 'connected' || data.status === 'online') : true
           }
         } catch {}
       }
@@ -96,7 +97,7 @@ export default function App() {
         }
         if (t > newestSessionTime) {
           newestSessionTime = t
-          isSessionActive = data.status === 'online' || data.connected === true || (Date.now() - t < 30000)
+          isSessionActive = (data.status === 'online' || data.connected === true) && (Date.now() - t < 45000)
         }
       })
       if (newestSessionTime > lastRecordTimestamp) {

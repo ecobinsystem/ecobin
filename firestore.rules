@@ -12,7 +12,15 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    match /esp32_status/{docId} {
+      allow read, write: if true;
+    }
+
     match /trash_records/{docId} {
+      allow read, write: if true;
+    }
+
+    match /waste_records/{docId} {
       allow read, write: if true;
     }
 

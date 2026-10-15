@@ -120,11 +120,6 @@ export default function Dashboard({ isOffline: propIsOffline, isOnline: propIsOn
           setLastUpdated(new Date().toLocaleTimeString())
 
           const isRecordRecent = newest?.rawDate ? (Date.now() - newest.rawDate.getTime() < 45000) : false
-          const isEsp32Offline = isOfflineRef.current || !isRecordRecent || (propIsOffline !== undefined && propIsOffline) || (propIsOnline !== undefined && !propIsOnline)
-
-          if (isEsp32Offline) {
-            return
-          }
 
           const checkBins = [
             {

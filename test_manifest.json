@@ -1,238 +1,86 @@
 [
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110946.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle12.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\food_waste15.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\foodwaste2.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can76.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_111033.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle110.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle2.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle159.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\food_waste8.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle259.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10563.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110006.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_84.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\220.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_112306_130.jpg",
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle213.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can11.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can65.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can50.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can31.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\junkfoodplastic.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\brokenclip.JPG",
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\payaya.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101004.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\white rabbit.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110859.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can78.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\green_leaves.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101126.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle107.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\box7.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle277.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_102349.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101722.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\31.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101846.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_112846.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle182.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle219.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\leaves2 (2).jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10112.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_084140.jpg",
-    "label": "residual"
+    "path": "D:\\Ecobin_new\\dataset\\human\\36.png",
+    "label": "human"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110115.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can45.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can5.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\tissue3.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_9959.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle233.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle171.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\garlic.jpg",
-    "label": "biodegradable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_112843.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\food tray.JPG",
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can12.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_111054.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_112302_986.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle206.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110934.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\squash1.jpg",
-    "label": "biodegradable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle14.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can48.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\food_waste9.jpg",
-    "label": "biodegradable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can17.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\IMG_20260429_111817.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110923.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle221.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110534.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle103.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110453.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can90.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle178.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle130.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle71.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle93.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle95.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_100948.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle32.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle274.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can33.jpg",
     "label": "recyclable"
   },
   {
@@ -240,143 +88,263 @@
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can59.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\receipt .JPG",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\216.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle60.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can110.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle77.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\cup2.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_085229.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\27.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can26.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\potato.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_9841.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle37.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\human\\19.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle240.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_103104.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\100.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_102311.jpg",
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\leaves4.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle29.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110654.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10519.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle147.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can46.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can57.jpg",
-    "label": "recyclable"
+    "path": "D:\\Ecobin_new\\dataset\\human\\22.png",
+    "label": "human"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle163.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110307.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\taro.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_9614.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110951.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110813.jpg",
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\tupperware18.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle138.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle15.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle101.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\ciggarate_box1.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\ripe_banana2.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle184.jpg",
-    "label": "recyclable"
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_88.jpg",
+    "label": "human"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle110.jpg",
-    "label": "recyclable"
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_53.jpg",
+    "label": "human"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can111.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle192.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle267.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_100942.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle205.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\leaves1.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\food_waste16.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110550.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can64.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can113.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_100955.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110554.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle202.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110819.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\orange.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_9853.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle62.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can103.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\ripe_mangoes.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle216.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_111121.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\tupperware4.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101709.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_102630.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle253.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\soup.JPG",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\gloves4.png",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_55.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle72.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101504.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle22.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle149.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\plastic folder.JPG",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle146.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\food_waste5.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle194.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle16.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle84.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\Image_84.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can85.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\mansanas1.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_085336.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\twin pack nescafe.jpeg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\franks.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\box9.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_111713.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can8.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_9958.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_233.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101608.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\47.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_111135.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10154.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10568.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\tissue3.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\39.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle164.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\tupperware19.jpg",
     "label": "recyclable"
   },
   {
@@ -384,99 +352,283 @@
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_112905.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\cup noodles.jpeg",
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\plasticwrap1.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle168.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can16.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10318.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10125.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101020.jpg",
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle150.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle186.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle48.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle82.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle262.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle276.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101336.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\mama sitas.JPG",
     "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle103.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10392.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_111852.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_964.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_9856.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_248.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110018.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_963.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can32.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_9859.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10387.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101459.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle19.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_9965.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_103840.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle96.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\3.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101115.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_103830.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_8.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\paperplate2.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_102847.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_9.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_214.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\206.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle200.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle257.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\coffee(1).JPG",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\chuckie_box.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_184.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can2.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\846391542_1673670684379448_3136915081286714232_n.webp",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_239.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle14.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\egg.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10538.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle8.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\fruits.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110608.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_1013.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_22.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110052.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_69.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle269.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\222.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\Maxx honey lemon.jpeg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle222.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110703.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\banana4.jpg",
+    "label": "biodegradable"
   },
   {
     "path": "D:\\Ecobin_new\\dataset\\biodegradable\\newspaper.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_111150.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\jackfruit.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\ginger.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\tupperware7.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle91.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101552.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101156.jpg",
-    "label": "residual"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle249.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle241.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\food_waste6.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\food_waste17.jpg",
     "label": "biodegradable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_111718.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10513.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110232.jpg",
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle285.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle157.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle228.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_226.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101400.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\196.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle34.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle234.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle242.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can96.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can41.jpg",
-    "label": "recyclable"
-  },
-  {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can101.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can71.jpg",
     "label": "recyclable"
   },
   {
@@ -484,11 +636,263 @@
     "label": "residual"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can51.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle91.jpg",
     "label": "recyclable"
   },
   {
-    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110434.jpg",
+    "path": "D:\\Ecobin_new\\dataset\\residual\\Image_71.jpg",
     "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\78.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\Image_55.png",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\tupperware15.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_229.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can107.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can62.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle104.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\40.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_9850.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\kangkong.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle235.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_26.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\wet_wipes.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110819.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle78.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle18.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can110.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10115.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\ciggarate_b0x6.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_3.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110925.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10404.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\89.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_223.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\85.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_181.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle83.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\tupperware3.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\193.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\bubble_wrap3.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle151.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\200.png",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10516.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_62.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle243.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can84.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can55.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_101633.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260502_102705.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\clip1.JPG",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_33.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\can44.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10374.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_202.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\Image_2.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\tupperware12.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10124.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_51.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\IMG_20260429_110107.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle46.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_76.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\bottle21.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_28.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\letuce.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\residual\\plasticwrap2.jpg",
+    "label": "residual"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\paper_plate.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_34.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10114.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\ripe_manggoes1.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\recyclable\\canplate.jpg",
+    "label": "recyclable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\human\\human_176.jpg",
+    "label": "human"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10580.jpg",
+    "label": "biodegradable"
+  },
+  {
+    "path": "D:\\Ecobin_new\\dataset\\biodegradable\\O_10533.jpg",
+    "label": "biodegradable"
   }
 ]

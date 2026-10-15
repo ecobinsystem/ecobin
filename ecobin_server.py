@@ -1,6 +1,8 @@
 from pathlib import Path
+import atexit
 import json
 import os
+import signal
 import time
 from hmac import compare_digest
 
@@ -13,6 +15,7 @@ from firebase_service import (
     firebase_status,
     initialize_firebase,
     record_classification,
+    record_esp32_session,
     record_esp32_status,
     record_trash_level,
 )
@@ -40,6 +43,7 @@ META_PATH = BASE_DIR / "class_names.json"
 
 CLASS_NAMES = [
     "biodegradable",
+    "human",
     "recyclable",
     "residual"
 ]
@@ -120,7 +124,7 @@ if META_PATH.exists():
 
         if (
             isinstance(loaded_classes, list)
-            and len(loaded_classes) == 3
+            and len(loaded_classes) >= 3
         ):
 
             CLASS_NAMES = loaded_classes
@@ -410,13 +414,23 @@ def classify():
             "AI confidence accepted."
         )
 
-        print(
-            "Sending command immediately..."
-        )
+        if label == "human":
+            print(
+                "Human detected. Not opening any lid."
+            )
+            command_result = {
+                "success": True,
+                "sent": False,
+                "message": "Human detected - Ignored"
+            }
+        else:
+            print(
+                "Sending command immediately..."
+            )
 
-        command_result = send_to_esp32(
-            label
-        )
+            command_result = send_to_esp32(
+                label
+            )
 
     else:
 
@@ -626,6 +640,30 @@ def home():
         "hardware_mode": "gpio" if hardware.enabled else "simulated"
 
     })
+
+
+@app.route(
+    "/api/status",
+    methods=["GET"]
+)
+def api_status():
+    return jsonify({
+        "status": "online",
+        "connected": True,
+        "device": "Raspberry Pi",
+        "hardware_mode": "gpio" if hardware.enabled else "simulated"
+    })
+
+
+def cleanup_session():
+    try:
+        record_esp32_session({"status": "offline", "connected": False, "device": "Raspberry Pi"})
+    except Exception:
+        pass
+
+
+atexit.register(cleanup_session)
+signal.signal(signal.SIGTERM, lambda s, f: (cleanup_session(), os._exit(0)))
 
 
 # ============================================================

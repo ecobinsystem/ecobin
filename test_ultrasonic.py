@@ -4,9 +4,9 @@ import time
 from gpiozero import DigitalInputDevice, DigitalOutputDevice
 
 SENSORS = {
-    "Biodegradable": {"trigger": 23, "echo": 24},
+    "Biodegradable": {"trigger": 5, "echo": 6},
     "Recyclable": {"trigger": 25, "echo": 27},
-    "Residual": {"trigger": 5, "echo": 6},
+    "Residual": {"trigger": 23, "echo": 24},
 }
 
 def measure_distance(trig: DigitalOutputDevice, echo: DigitalInputDevice) -> float | None:

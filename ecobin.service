@@ -1,0 +1,17 @@
+[Unit]
+Description=EcoBin Server and Camera
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ecobin
+WorkingDirectory=/home/ecobin/ecobin
+ExecStart=/bin/bash /home/ecobin/ecobin/start_ecobin.sh
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
