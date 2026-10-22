@@ -29,7 +29,7 @@ export default function Esp32OfflineModal({
           </div>
 
           <h3 className="text-lg font-bold text-slate-900">
-            ESP32 Offline
+            Device Offline
           </h3>
           <p className="text-xs text-slate-500 mt-1">
             Please check the device connection.
@@ -41,7 +41,7 @@ export default function Esp32OfflineModal({
               <span>Troubleshooting Checklist</span>
             </div>
             <ul className="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
-              <li>Ensure the ESP32 microcontroller is powered on</li>
+              <li>Ensure the Raspberry Pi is powered on</li>
               <li>Verify that the Wi-Fi credentials in firmware match your router</li>
               <li>Confirm the device is assigned IP <span className="font-mono font-bold text-slate-800">{deviceIp}</span></li>
             </ul>

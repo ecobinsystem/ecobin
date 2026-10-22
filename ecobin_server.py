@@ -372,6 +372,19 @@ def classify():
     # CONFIDENCE CHECK
     # ========================================================
 
+    waste_classes = [c for c in CLASS_NAMES if c != "human"]
+    waste_scores = {c: probabilities.get(c, 0.0) for c in waste_classes}
+    best_waste_class = max(waste_scores, key=waste_scores.get) if waste_scores else None
+    best_waste_score = waste_scores[best_waste_class] if best_waste_class else 0.0
+    total_waste_score = sum(waste_scores.values())
+
+    if label == "human" and best_waste_class and total_waste_score >= 0.015:
+        normalized_confidence = best_waste_score / total_waste_score
+        if normalized_confidence >= CONFIDENCE_THRESHOLD:
+            print(f"Smart Waste Filter: Overriding human detection with {best_waste_class} (raw: {best_waste_score*100:.2f}%, normalized: {normalized_confidence*100:.1f}%)")
+            label = best_waste_class
+            confidence = normalized_confidence
+
     accepted = (
         confidence
         >= CONFIDENCE_THRESHOLD

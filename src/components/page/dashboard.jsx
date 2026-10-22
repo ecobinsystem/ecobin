@@ -323,11 +323,11 @@ export default function Dashboard({ isOffline: propIsOffline, isOnline: propIsOn
     {
       name: 'Residual',
       icon: Trash2,
-      iconColor: 'text-slate-900 bg-slate-100 border-slate-300',
-      accent: 'black',
-      accentColor: '#18181b',
-      accentDark: '#09090b',
-      accentGradient: 'bg-gradient-to-t from-zinc-900 to-zinc-700',
+      iconColor: 'text-red-600 bg-red-50 border-red-200',
+      accent: 'red',
+      accentColor: '#ef4444',
+      accentDark: '#b91c1c',
+      accentGradient: 'bg-gradient-to-t from-red-600 to-red-400',
       data: res,
       fill: Math.min(100, Math.max(0, Math.round(Number(res.fillPercentage) || 0))),
       distance: res.distanceCm != null ? Number(res.distanceCm).toFixed(1) : '--'

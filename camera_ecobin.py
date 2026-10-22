@@ -109,13 +109,13 @@ COOLDOWN_DURATION = 5.0
 opening_until = 0.0
 opening_waste_type = ""
 
-ROI_X1 = 160
-ROI_Y1 = 100
-ROI_X2 = 480
-ROI_Y2 = 380
+ROI_X1 = 60
+ROI_Y1 = 30
+ROI_X2 = 580
+ROI_Y2 = 450
 PROXIMITY_MIN_AREA = 40000
 avg_bg = None
-bg_warmup = 25
+bg_warmup = 45
 object_detected = False
 bare_hand_detected = False
 human_detected = False
@@ -123,6 +123,9 @@ detected_humans = []
 was_opening = False
 SCAN_DURATION = 2.0
 object_detected_start = None
+isolated_waste_crop = None
+isolated_waste_box = None
+range_status = "READY"
 
 face_cascade = None
 try:
@@ -142,7 +145,7 @@ def send_image_worker(frame_to_send):
             frame_to_send,
             [
                 cv2.IMWRITE_JPEG_QUALITY,
-                85
+                95
             ]
         )
 
@@ -339,22 +342,7 @@ while running:
 
 
     frame_count += 1
-    if face_cascade is not None and frame_count % 3 == 0:
-        try:
-            gray_full = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            small_gray = cv2.resize(gray_full, (0, 0), fx=0.5, fy=0.5)
-            detected_faces = face_cascade.detectMultiScale(
-                small_gray,
-                scaleFactor=1.15,
-                minNeighbors=8,
-                minSize=(50, 50)
-            )
-            real_faces = [f for f in detected_faces if (f[1] + f[3] // 2) * 2 < 260]
-            human_detected = len(real_faces) > 0
-        except Exception:
-            human_detected = False
-    elif face_cascade is None:
-        human_detected = False
+    human_detected = False
 
     roi = frame[ROI_Y1:ROI_Y2, ROI_X1:ROI_X2]
     gray_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
@@ -369,35 +357,14 @@ while running:
         object_detected = False
     else:
         diff = cv2.absdiff(gray_roi, cv2.convertScaleAbs(avg_bg))
-        _, thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)
+        _, thresh = cv2.threshold(diff, 20, 255, cv2.THRESH_BINARY)
         thresh = cv2.dilate(thresh, None, iterations=2)
-        contours, _ = cv2.findContours(
-            thresh,
-            cv2.RETR_EXTERNAL,
-            cv2.CHAIN_APPROX_SIMPLE
-        )
+        total_motion_pixels = np.count_nonzero(thresh)
 
-        max_contour_area = 0
-        for c in contours:
-            area = cv2.contourArea(c)
-            if area > max_contour_area:
-                max_contour_area = area
-
-        object_detected = max_contour_area >= PROXIMITY_MIN_AREA
-        if object_detected:
-            ycrcb = cv2.cvtColor(roi, cv2.COLOR_BGR2YCrCb)
-            skin_mask = cv2.inRange(ycrcb, (0, 133, 77), (255, 173, 127))
-            motion_skin = cv2.bitwise_and(skin_mask, thresh)
-            motion_total = np.count_nonzero(thresh)
-            if motion_total > 0 and (np.count_nonzero(motion_skin) / motion_total) > 0.55:
-                object_detected = False
-                bare_hand_detected = True
-            else:
-                bare_hand_detected = False
+        if total_motion_pixels >= 4000:
+            object_detected = True
         else:
-            bare_hand_detected = False
-
-        if not object_detected and not bare_hand_detected:
+            object_detected = False
             cv2.accumulateWeighted(gray_roi, avg_bg, 0.05)
 
     now = time.time()
@@ -412,21 +379,18 @@ while running:
         last_command_status = "NOT SENT"
         opening_waste_type = ""
         avg_bg = None
-        bg_warmup = 25
+        bg_warmup = 45
         object_detected = False
         object_detected_start = None
+        isolated_waste_crop = None
+        isolated_waste_box = None
         last_send = now
         print("=" * 60)
         print("          SCANNER RESTARTED - READY FOR OBJECT")
         print("=" * 60)
         print()
 
-    if human_detected:
-        object_detected = False
-        object_detected_start = None
-        scan_progress = 0.0
-        scan_ready = False
-    elif object_detected and (now >= opening_until):
+    if object_detected and (now >= opening_until):
         if object_detected_start is None:
             object_detected_start = now
         held_duration = now - object_detected_start
@@ -437,20 +401,14 @@ while running:
         scan_progress = 0.0
         scan_ready = False
 
-
-    # ========================================================
-    # SEND IMAGE TO FLASK
-    # ========================================================
-
-    if (now >= opening_until) and scan_ready and not human_detected and (now - last_send >= SEND_INTERVAL) and not is_sending:
-
+    if (now >= opening_until) and scan_ready and (now - last_send >= SEND_INTERVAL) and not is_sending:
         last_send = now
         is_sending = True
         object_detected_start = None
 
         threading.Thread(
             target=send_image_worker,
-            args=(frame.copy(),),
+            args=(roi.copy(),),
             daemon=True
         ).start()
 
@@ -548,17 +506,18 @@ while running:
 
         if scan_ready:
             zone_label = "OBJECT SCANNED - CLASSIFYING"
-        elif bare_hand_detected:
-            zone_label = "BARE HAND DETECTED - HOLD WASTE"
+            box_color = (0, 255, 0)
         elif object_detected:
-            zone_label = f"SCANNING... {int(scan_progress * 100)}%"
+            zone_label = f"SCANNING WASTE... {int(scan_progress * 100)}%"
+            box_color = (0, 255, 0)
         else:
             zone_label = "HOLD OBJECT HERE"
+            box_color = (0, 165, 255)
 
         cv2.putText(
             frame,
             zone_label,
-            (ROI_X1, ROI_Y1 - 10),
+            (ROI_X1 + 10, max(20, ROI_Y1 - 8)),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.6,
             box_color,
@@ -588,6 +547,33 @@ while running:
                 (ROI_X2, bar_y + 12),
                 (200, 200, 200),
                 1
+            )
+
+        if isolated_waste_box is not None:
+            bx, by, bw, bh = isolated_waste_box
+            cv2.rectangle(
+                frame,
+                (bx, by),
+                (bx + bw, by + bh),
+                (0, 255, 0),
+                3
+            )
+            label_y = max(24, by)
+            cv2.rectangle(
+                frame,
+                (bx, label_y - 24),
+                (min(638, bx + 225), label_y),
+                (0, 255, 0),
+                -1
+            )
+            cv2.putText(
+                frame,
+                "DETECTED WASTE (10-12 CM)",
+                (bx + 6, label_y - 7),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                (0, 0, 0),
+                2
             )
 
         if scan_ready or last_class != "-":
@@ -667,8 +653,10 @@ while running:
                     break
                 elif key == ord("r"):
                     avg_bg = None
-                    bg_warmup = 25
+                    bg_warmup = 45
                     object_detected_start = None
+                    isolated_waste_crop = None
+                    isolated_waste_box = None
             except Exception:
                 pass
         else:

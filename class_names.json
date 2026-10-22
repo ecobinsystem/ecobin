@@ -7,12 +7,12 @@
   ],
   "image_size": 224,
   "input_contract": "RGB float32 pixels in 0..255; preprocessing is inside the model",
-  "test_accuracy": 0.8883928656578064,
-  "macro_f1": 0.8918378778450112,
+  "test_accuracy": 0.8728070259094238,
+  "macro_f1": 0.873447661673365,
   "per_class_recall": {
-    "biodegradable": 0.8846153846153846,
-    "human": 0.9555555555555556,
-    "recyclable": 0.9014084507042254,
-    "residual": 0.8214285714285714
+    "biodegradable": 0.7857142857142857,
+    "human": 0.9777777777777777,
+    "recyclable": 0.9714285714285714,
+    "residual": 0.7543859649122807
   }
 }
